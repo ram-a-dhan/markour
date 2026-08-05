@@ -2,10 +2,24 @@
 
 ## Requirements
 
-| package | min. version |
+| Package Name | Min. Version |
 | --- | --- |
 | `node` | `20.9` |
 | `pnpm` | `10.30.3` |
+
+## Setup
+
+Copy the dotenv file:
+
+```sh
+cp .env.example .env
+```
+
+Migrate the database schema:
+
+```sh
+pnpm db:migrate
+```
 
 ## Development
 
