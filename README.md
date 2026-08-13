@@ -15,6 +15,20 @@ Copy the dotenv file:
 cp .env.example .env
 ```
 
+Fill in the JWT secret:
+
+```sh
+JWT_SECRET=<your-jwt-secret>
+```
+
+Fill in the Google Sign-In credentials:
+
+```sh
+GOOGLE_CLIENT_ID=<your-client-id>
+GOOGLE_CLIENT_SECRET=<your-client-secret>
+GOOGLE_REDIRECT_URI=<your-redirect-uri>
+```
+
 Migrate the database schema:
 
 ```sh
