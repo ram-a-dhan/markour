@@ -3,6 +3,11 @@ import { eq } from "drizzle-orm";
 import { db } from "@/src/db";
 import { users as userSchema } from "@/src/db/schema";
 import { signJwt } from "@/src/lib/jwt";
+import {
+  GOOGLE_OAUTH_TOKEN_API_URL,
+  GOOGLE_OAUTH_USERINFO_API_URL,
+  HOME_PATH, NOTE_LIST_PATH,
+} from "@/src/constants/url";
 
 interface ITokenData {
   access_token: string;
@@ -26,7 +31,7 @@ export async function GET(req:NextRequest) {
   }
 
   // exchange code for token
-  const tokenRes = await fetch("https://oauth2.googleapis.com/token", {
+  const tokenRes = await fetch(GOOGLE_OAUTH_TOKEN_API_URL, {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: new URLSearchParams({
@@ -45,7 +50,7 @@ export async function GET(req:NextRequest) {
   }
 
   // fetch user profile
-  const userRes = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
+  const userRes = await fetch(GOOGLE_OAUTH_USERINFO_API_URL, {
     headers: { "Authorization": `Bearer ${tokenData.access_token}` },
   });
 
@@ -76,14 +81,14 @@ export async function GET(req:NextRequest) {
   const token = signJwt({ userId: user.id, email: user.email });
 
   // set cookie
-  const res = NextResponse.redirect(new URL("/", req.url));
+  const res = NextResponse.redirect(new URL(NOTE_LIST_PATH, req.url));
 
   res.cookies.set("auth_token", token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
     maxAge: 60 * 60 * 24 * 7, // 7 days
-    path: "/",
+    path: HOME_PATH,
   });
 
   // redirect to home

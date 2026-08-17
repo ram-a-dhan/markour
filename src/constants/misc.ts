@@ -1,0 +1,21 @@
+export const REQUEST_METHOD = {
+  GET: "GET",
+  POST: "POST",
+  PUT: "PUT",
+  PATCH: "PATCH",
+  DELETE: "DELETE",
+  OPTIONS: "OPTIONS",
+} as const;
+
+export const HTTP_STATUS = {
+  OK: 200,
+  CREATED: 201,
+  BAD_REQUEST: 400,
+  NOT_AUTHENTICATED: 401,
+  NOT_AUTHORIZED: 403,
+  NOT_FOUND: 404,
+  NOT_ALLOWED: 405,
+  CONFLICT: 409,
+  TOO_MANY: 429,
+  SERVER_ERROR: 500,
+} as const;

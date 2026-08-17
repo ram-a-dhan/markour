@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { GOOGLE_OAUTH_CONSENT_SCREEN_URL } from "@/src/constants/url";
 
 export async function GET() {
   const params = new URLSearchParams({
@@ -10,5 +11,5 @@ export async function GET() {
     prompt: "select_account",
   });
 
-  return NextResponse.redirect(`https://accounts.google.com/o/oauth2/v2/auth?${params}`);
+  return NextResponse.redirect(`${GOOGLE_OAUTH_CONSENT_SCREEN_URL}?${params}`);
 }

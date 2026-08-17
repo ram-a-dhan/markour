@@ -43,4 +43,4 @@ Run the development server:
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://dev.markour.space:3000](http://dev.markour.space:3000) with your browser to see the result.
