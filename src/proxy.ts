@@ -1,10 +1,36 @@
 import { NextRequest, NextResponse } from "next/server";
+import { verifyJwt } from "./lib/jwt";
+import { API_PATH, HOME_PATH, NOTE_LIST_PATH } from "./constants/url";
 
 const BASE_URL = process.env.BASE_URL!;
-
+const PUBLIC_PAGES = [HOME_PATH];
 const ALLOWED_ORIGINS = [BASE_URL];
 
 export function proxy(req: NextRequest) {
+  // /pages requests
+  const { pathname } = req.nextUrl;
+  const isApi = pathname.startsWith(API_PATH); 
+
+  if (!isApi) {
+    const isPublicPage = PUBLIC_PAGES.includes(pathname);
+    const token = req.cookies.get("auth_token")?.value;
+    const payload = token ? verifyJwt(token) : null;
+
+    // inside but not logged in
+    if (!isPublicPage && !payload) {
+      return NextResponse.redirect(new URL(HOME_PATH, req.url));
+    }
+
+    // outside but logged in
+    if (isPublicPage && payload) {
+      return NextResponse.redirect(new URL(NOTE_LIST_PATH, req.url));
+    }
+
+    // default case
+    return NextResponse.next();
+  }
+
+  // /api requests (cors + security headers)
   const origin = req.headers.get("origin");
   const isAllowedOrigin = origin && ALLOWED_ORIGINS.includes(origin);
 
@@ -23,6 +49,7 @@ export function proxy(req: NextRequest) {
 
   // standard requests
   const res = NextResponse.next();
+
   if (isAllowedOrigin) {
     res.headers.set("Access-Control-Allow-Origin", origin);
     res.headers.set("Access-Control-Allow-Credentials", "true");
@@ -42,5 +69,5 @@ export function proxy(req: NextRequest) {
 }
 
 export const config = {
-  matcher: "/api/:path*",
+  matcher: ["/api/:path*", "/((?!_next/static|_next/image|favicon.ico).*)"],
 };
