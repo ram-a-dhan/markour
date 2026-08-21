@@ -1,5 +1,6 @@
 import { useRouter } from "next/navigation";
 import { ActionIcon, Avatar, Tooltip } from "@mantine/core";
+import { NotepadIcon, SignOutIcon, TagIcon, TrashIcon } from "@phosphor-icons/react";
 import { HOME_PATH, LOGOUT_API_PATH } from "@/src/constants/url";
 import { REQUEST_METHOD } from "@/src/constants/misc";
 
@@ -11,15 +12,15 @@ const user = {
 const menu = [
   {
     title: "Notes",
-    icon: "🗒️",
+    icon: NotepadIcon,
   },
   {
     title: "Trash",
-    icon: "🗑️",
+    icon: TrashIcon,
   },
   {
     title: "Tags",
-    icon: "🏷️",
+    icon: TagIcon,
   },
 ];
 
@@ -50,8 +51,12 @@ export default function Menu({ closeDrawer }: IMenuProps) {
             className="p-4 flex items-center gap-2 cursor-pointer hover:bg-(--mantine-color-default-hover) active:bg-(--mantine-color-default-border) select-none"
             onClick={closeDrawer}
           >
-            <span>{item.icon}</span>
-            <p>{item.title}</p>
+            <span>
+              {<item.icon size={24} />}
+            </span>
+            <p>
+              {item.title}
+            </p>
           </div>
         ))}
       </div>
@@ -61,13 +66,27 @@ export default function Menu({ closeDrawer }: IMenuProps) {
         key="footer"
         className="p-4 flex items-center gap-2 bg-(--mantine-color-body) border-t border-t-(--mantine-color-default-border) sticky bottom-0"
       >
-        <Avatar size="40px" name={user.name} color="blue" />
+        <Avatar
+          size="40px"
+          name={user.name}
+          color="dark"
+        />
         <div className="flex-1">
-          <p className="mb-1">{user.name}</p>
-          <p className="text-xs text-(--mantine-color-dimmed)">{user.email}</p>
+          <p className="mb-1">
+            {user.name}
+          </p>
+          <p className="text-xs text-(--mantine-color-dimmed)">
+            {user.email}
+          </p>
         </div>
         <Tooltip label="Sign Out">
-          <ActionIcon onClick={logout}>🚪</ActionIcon>
+          <ActionIcon
+            variant="transparent"
+            color="dark"
+            onClick={logout}
+          >
+            <SignOutIcon size={26} />
+          </ActionIcon>
         </Tooltip>
       </footer>
     </>

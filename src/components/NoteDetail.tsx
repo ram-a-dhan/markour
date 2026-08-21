@@ -1,5 +1,6 @@
-import { AppShell, Burger } from "@mantine/core";
 import { PropsWithChildren } from "react";
+import { ActionIcon, AppShell, Burger, Tooltip } from "@mantine/core";
+import { SidebarSimpleIcon } from "@phosphor-icons/react";
 
 interface INoteDetailProps extends PropsWithChildren {
   openedNavbarDesktop: boolean;
@@ -20,12 +21,19 @@ export default function NoteDetail({
       {/* NOTE HEADER */}
       <AppShell.Header p="md">
         <div className="flex items-center gap-4">
-          <Burger
-            opened={openedNavbarDesktop}
-            onClick={toggleNavbarDesktop}
-            visibleFrom="sm"
-            size="sm"
-          />
+          <Tooltip label="Toggle Sidebar">
+            <ActionIcon
+             variant="transparent"
+             color="dark"
+             onClick={toggleNavbarDesktop}
+             visibleFrom="sm"
+            >
+              <SidebarSimpleIcon
+                size={26}
+                weight={openedNavbarDesktop ? "fill" : "regular"}
+              />
+            </ActionIcon>
+          </Tooltip>
           <Burger
             opened={openedNavbarMobile}
             onClick={toggleNavbarMobile}

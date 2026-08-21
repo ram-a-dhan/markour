@@ -1,5 +1,6 @@
 import { Button, Card } from "@mantine/core";
 import { GOOGLE_AUTH_API_PATH } from "@/src/constants/url";
+import { GoogleLogoIcon, GooglePlayLogoIcon } from "@phosphor-icons/react";
 
 export default function LoginCard() {
   return (
@@ -23,14 +24,16 @@ export default function LoginCard() {
 
       <div className="w-full flex flex-col gap-4">
         <a href={GOOGLE_AUTH_API_PATH}>
-          <Button fullWidth>Sign In With Google</Button>
+          <Button fullWidth leftSection={<GoogleLogoIcon />}>
+            Sign In With Google
+          </Button>
         </a>
         {/* NOTE: coming soon */}
         {/* <a href={"#"}>
-            <Button fullWidth color="green">
-              Download Android App
-            </Button>
-          </a> */}
+          <Button fullWidth color="green" leftSection={<GooglePlayLogoIcon />}>
+            Download Android App
+          </Button>
+        </a> */}
       </div>
     </Card>
   );
