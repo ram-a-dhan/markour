@@ -6,6 +6,7 @@ const nextConfig: NextConfig = {
     optimizePackageImports: [
       "@mantine/core",
       "@mantine/hooks",
+      "@phosphor-icons/react",
     ],
   },
 };

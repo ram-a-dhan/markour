@@ -5,19 +5,13 @@ import "@/src/styles/global.scss";
 
 import { PropsWithChildren } from "react";
 import type { Metadata } from "next";
-import {
-  ColorSchemeScript,
-  MantineProvider,
-  createTheme,
-  mantineHtmlProps,
-} from "@mantine/core";
+import { ColorSchemeScript, mantineHtmlProps } from "@mantine/core";
+import Providers from "./providers";
 
 export const metadata: Metadata = {
   title: "Markour",
   description: "Agile & Flexible Makdown Notes",
 };
-
-const theme = createTheme({});
 
 export default function RootLayout({ children }: PropsWithChildren) {
   return (
@@ -26,9 +20,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
         <ColorSchemeScript defaultColorScheme="auto" />
       </head>
       <body>
-        <MantineProvider theme={theme} defaultColorScheme="auto">
-          {children}
-        </MantineProvider>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

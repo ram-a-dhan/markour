@@ -1,4 +1,5 @@
 import { ActionIcon, AppShell, ScrollArea, Tooltip } from "@mantine/core";
+import { GearFineIcon, NotePencilIcon } from "@phosphor-icons/react";
 
 const notes = [
   {
@@ -52,13 +53,25 @@ export default function NoteList({
         className="grow-0 shrink-0 flex items-center justify-between border-b border-b-(--app-shell-border-color) overflow-hidden"
       >
         <Tooltip label="Settings">
-          <ActionIcon onClick={openDrawer}>⚙️</ActionIcon>
+          <ActionIcon
+            variant="transparent"
+            color="dark"
+            onClick={openDrawer}
+          >
+            <GearFineIcon size={26} />
+          </ActionIcon>
         </Tooltip>
 
         <h2>Notes</h2>
 
         <Tooltip label="Create New Note">
-          <ActionIcon onClick={onClickNavbarItem}>✏️</ActionIcon>
+          <ActionIcon
+            variant="transparent"
+            color="dark"
+            onClick={onClickNavbarItem}
+          >
+            <NotePencilIcon size={26} />
+          </ActionIcon>
         </Tooltip>
       </AppShell.Section>
 
@@ -74,7 +87,9 @@ export default function NoteList({
             onClick={onClickNavbarItem}
             className="p-4 cursor-pointer hover:bg-(--mantine-color-default-hover) active:bg-(--mantine-color-default-border) select-none"
           >
-            <p className="mb-1">{item.title}</p>
+            <p className="mb-1">
+              {item.title}
+            </p>
             <p className="text-xs text-(--mantine-color-dimmed) line-clamp-1">
               {item.content}
             </p>
