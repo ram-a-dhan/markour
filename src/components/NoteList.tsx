@@ -87,10 +87,10 @@ export default function NoteList({
             onClick={onClickNavbarItem}
             className="p-4 cursor-pointer hover:bg-(--mantine-color-default-hover) active:bg-(--mantine-color-default-border) select-none"
           >
-            <p className="mb-1">
+            <p className="mb-1 truncate">
               {item.title}
             </p>
-            <p className="text-xs text-(--mantine-color-dimmed) line-clamp-1">
+            <p className="text-xs text-(--mantine-color-dimmed) truncate">
               {item.content}
             </p>
           </div>

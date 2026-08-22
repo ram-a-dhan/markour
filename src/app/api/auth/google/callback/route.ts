@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { eq } from "drizzle-orm";
 import { db } from "@/src/db";
 import { users as userSchema } from "@/src/db/schema";
 import { signJwt } from "@/src/lib/jwt";
