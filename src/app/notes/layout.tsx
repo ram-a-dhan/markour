@@ -23,6 +23,8 @@ export default function NotesLayout({ children }: PropsWithChildren) {
           header: "h-15 border-b border-b-(--mantine-color-default-border)",
           body: "p-0! flex flex-col h-[calc(100%-60px)]",
         }}
+        keepMounted
+        keepMountedMode="display-none"
       >
         <Menu closeDrawer={closeDrawer} />
       </Drawer>

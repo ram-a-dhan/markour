@@ -1,13 +1,9 @@
 import { useRouter } from "next/navigation";
 import { ActionIcon, Avatar, Tooltip } from "@mantine/core";
 import { NotepadIcon, SignOutIcon, TagIcon, TrashIcon } from "@phosphor-icons/react";
-import { HOME_PATH, LOGOUT_API_PATH } from "@/src/constants/url";
+import { HOME_PATH, LOGOUT_API_PATH, SESSION_API_PATH } from "@/src/constants/url";
 import { REQUEST_METHOD } from "@/src/constants/misc";
-
-const user = {
-  name: "Carl Johnson",
-  email: "carl.johnson@gtamail.com",
-};
+import { useEffect, useRef, useState } from "react";
 
 const menu = [
   {
@@ -24,12 +20,31 @@ const menu = [
   },
 ];
 
+interface IUser {
+  name: string;
+  email: string;
+  picture: string;
+}
+
 interface IMenuProps {
   closeDrawer: () => void;
 }
 
 export default function Menu({ closeDrawer }: IMenuProps) {
+  const [user, setUser] = useState<IUser>();
+
+  const isFirstLoad = useRef(true);
+
   const router = useRouter();
+
+  const fetchUser = async () => {
+    try {
+      const response = await fetch(SESSION_API_PATH);
+      response.json().then(setUser);
+    } catch (error) {
+      console.log((error as Error).message);
+    }
+  };
 
   const logout = async () => {
     try {
@@ -40,6 +55,13 @@ export default function Menu({ closeDrawer }: IMenuProps) {
       console.log((error as Error).message);
     }
   };
+
+  useEffect(() => {
+    if (isFirstLoad.current) {
+      fetchUser();
+      isFirstLoad.current = false;
+    }
+  }, []);
 
   return (
     <>
@@ -67,16 +89,17 @@ export default function Menu({ closeDrawer }: IMenuProps) {
         className="p-4 flex items-center gap-2 bg-(--mantine-color-body) border-t border-t-(--mantine-color-default-border) sticky bottom-0"
       >
         <Avatar
+          src={user?.picture}
           size="40px"
-          name={user.name}
+          name={user?.name}
           color="dark"
         />
-        <div className="flex-1">
-          <p className="mb-1">
-            {user.name}
+        <div className="flex-1 min-w-0">
+          <p className="mb-1 truncate">
+            {user?.name}
           </p>
-          <p className="text-xs text-(--mantine-color-dimmed)">
-            {user.email}
+          <p className="text-xs text-(--mantine-color-dimmed) truncate">
+            {user?.email}
           </p>
         </div>
         <Tooltip label="Sign Out">
