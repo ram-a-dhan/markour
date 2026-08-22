@@ -64,18 +64,22 @@ export async function GET(req:NextRequest) {
     return NextResponse.redirect(new URL("/?error=email_not_verified", req.url));
   }
 
-  // find user or create new user
-  let [user] = await db
-    .select()
-    .from(userSchema)
-    .where(eq(userSchema.email, userData.email));
-
-  if (!user) {
-    [user] = await db
-      .insert(userSchema)
-      .values({ email: userData.email })
-      .returning();
-  }
+  // upsert user
+  const [user] = await db
+    .insert(userSchema)
+    .values({
+      name: userData.name,
+      email: userData.email,
+      picture: userData.picture,
+    })
+    .onConflictDoUpdate({
+      target: userSchema.email,
+      set: {
+        name: userData.name,
+        picture: userData.picture,
+      },
+    })
+    .returning();
 
   // set token
   const token = signJwt({ userId: user.id, email: user.email });
