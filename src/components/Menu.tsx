@@ -1,9 +1,6 @@
-import { useRouter } from "next/navigation";
 import { ActionIcon, Avatar, Tooltip } from "@mantine/core";
 import { NotepadIcon, SignOutIcon, TagIcon, TrashIcon } from "@phosphor-icons/react";
-import { HOME_PATH, LOGOUT_API_PATH, SESSION_API_PATH } from "@/src/constants/url";
-import { REQUEST_METHOD } from "@/src/constants/misc";
-import { useEffect, useRef, useState } from "react";
+import { useSession } from "@/src/context/SessionContext";
 
 const menu = [
   {
@@ -20,48 +17,12 @@ const menu = [
   },
 ];
 
-interface IUser {
-  name: string;
-  email: string;
-  picture: string;
-}
-
 interface IMenuProps {
   closeDrawer: () => void;
 }
 
 export default function Menu({ closeDrawer }: IMenuProps) {
-  const [user, setUser] = useState<IUser>();
-
-  const isFirstLoad = useRef(true);
-
-  const router = useRouter();
-
-  const fetchUser = async () => {
-    try {
-      const response = await fetch(SESSION_API_PATH);
-      response.json().then(setUser);
-    } catch (error) {
-      console.log((error as Error).message);
-    }
-  };
-
-  const logout = async () => {
-    try {
-      await fetch(LOGOUT_API_PATH, { method: REQUEST_METHOD.POST });
-      router.push(HOME_PATH);
-      router.refresh();
-    } catch (error) {
-      console.log((error as Error).message);
-    }
-  };
-
-  useEffect(() => {
-    if (isFirstLoad.current) {
-      fetchUser();
-      isFirstLoad.current = false;
-    }
-  }, []);
+  const { user, logout } = useSession();
 
   return (
     <>
