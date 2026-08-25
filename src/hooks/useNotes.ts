@@ -1,14 +1,12 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 import {
   ILocalNote,
   getAllLocalNotes,
   putLocalNote,
   getLocalNote,
-  getLastUserId,
-  clearAllLocalNotes,
-  setLastUserId,
 } from "@/src/lib/localdb";
 import {
   pushDirtyNotes,
@@ -57,9 +55,12 @@ export function useNotes() {
 
   const createNote = useCallback(async () => {
     if (!userId) throw new Error("cannot create a note without a logged-in user");
+    const id = uuidv4();
+    const existing = await getLocalNote(id);
+    if (existing) throw new Error("UUID collision! Please try again.")
     const now = Date.now();
     const newNote: ILocalNote = {
-      id: crypto.randomUUID(),
+      id,
       userId,
       title: "",
       content: "",
