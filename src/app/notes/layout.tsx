@@ -6,6 +6,7 @@ import { useDisclosure } from "@mantine/hooks";
 import Menu from "@/src/components/Menu";
 import NoteList from "@/src/components/NoteList";
 import NoteDetail from "@/src/components/NoteDetail";
+import { NotesProvider } from "@/src/context/NotesContext";
 
 export default function NotesLayout({ children }: PropsWithChildren) {
   const [openedDrawer, { open: openDrawer, close: closeDrawer }] = useDisclosure(false);
@@ -13,7 +14,7 @@ export default function NotesLayout({ children }: PropsWithChildren) {
   const [openedNavbarMobile, { toggle: toggleNavbarMobile, close: closeNavbarMobile }] = useDisclosure(true);
 
   return (
-    <>
+    <NotesProvider>
       <Drawer
         opened={openedDrawer}
         onClose={closeDrawer}
@@ -57,6 +58,6 @@ export default function NotesLayout({ children }: PropsWithChildren) {
           {children}
         </NoteDetail>
       </AppShell>
-    </>
+    </NotesProvider>
   );
 }

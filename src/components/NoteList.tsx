@@ -1,33 +1,8 @@
+import { useRouter } from "next/navigation";
 import { ActionIcon, AppShell, ScrollArea, Tooltip } from "@mantine/core";
 import { GearFineIcon, NotePencilIcon } from "@phosphor-icons/react";
-
-const notes = [
-  {
-    title: "Dolor voluptatem maiores nam illum",
-    content:
-      "Repellat aliquid alias nisi omnis veniam. Libero unde asperiores nemo, porro consequatur voluptatibus dolorem. Impedit, rerum error!",
-  },
-  {
-    title: "Dicta quisquam dolore facilis",
-    content:
-      "Fuga atque recusandae reprehenderit perspiciatis vero cupiditate. Possimus pariatur iste vel saepe nihil rem nam dignissimos obcaecati totam.",
-  },
-  {
-    title: "Beatae asperiores repellendus",
-    content:
-      "Inventore in id quas nisi doloremque eligendi esse itaque, autem excepturi quos adipisci similique assumenda laboriosam, animi dolores mollitia.",
-  },
-  {
-    title: "Dolorem culpa",
-    content:
-      "Consequatur expedita, iste, minima commodi ducimus placeat soluta non a dolores nulla. Ex commodi illum explicabo, nam nulla aut unde.",
-  },
-  {
-    title: "Eligendi",
-    content:
-      "Nam corrupti, libero itaque, beatae quaerat, nostrum architecto doloribus velit consequuntur magni aliquam harum officiis ad quisquam veritatis temporibus suscipit quae.",
-  },
-];
+import { useNotes } from "@/src/context/NotesContext";
+import { NOTE_DETAIL_PATH } from "../constants/url";
 
 interface INoteListProps {
   openDrawer: () => void;
@@ -40,8 +15,19 @@ export default function NoteList({
   openedNavbarMobile,
   closeNavbarMobile,
 }: INoteListProps) {
-  const onClickNavbarItem = () => {
+  const router = useRouter();
+
+  const { notes, createNote } = useNotes();
+
+  const onClickCreate = async () => {
+    const id = await createNote();
     if (openedNavbarMobile) closeNavbarMobile();
+    router.replace(NOTE_DETAIL_PATH(id));
+  };
+
+  const onClickOpen = (id: string) => {
+    if (openedNavbarMobile) closeNavbarMobile();
+    router.replace(NOTE_DETAIL_PATH(id));
   };
 
   return (
@@ -68,7 +54,7 @@ export default function NoteList({
           <ActionIcon
             variant="transparent"
             color="dark"
-            onClick={onClickNavbarItem}
+            onClick={onClickCreate}
           >
             <NotePencilIcon size={26} />
           </ActionIcon>
@@ -81,14 +67,14 @@ export default function NoteList({
         grow
         component={ScrollArea}
       >
-        {notes.map((item, index) => (
+        {notes.map((item) => (
           <div
-            key={index}
-            onClick={onClickNavbarItem}
+            key={item.id}
+            onClick={() => onClickOpen(item.id)}
             className="p-4 cursor-pointer hover:bg-(--mantine-color-default-hover) active:bg-(--mantine-color-default-border) select-none"
           >
             <p className="mb-1 truncate">
-              {item.title}
+              {item.title || "Untitled"}
             </p>
             <p className="text-xs text-(--mantine-color-dimmed) truncate">
               {item.content}
