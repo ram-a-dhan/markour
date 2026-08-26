@@ -1,10 +1,9 @@
 "use client";
 
-import type { ChangeEvent } from "react";
 import { useParams } from "next/navigation";
-import { Textarea, TextInput } from "@mantine/core";
-import { useNotes } from "@/src/context/NotesContext";
 import { CircleNotchIcon } from "@phosphor-icons/react";
+import { useNotes } from "@/src/context/NotesContext";
+import { NoteEditor } from "@/src/components/NoteEditor";
 
 export default function NotesById() {
   const params = useParams<{ id: string }>();
@@ -13,14 +12,9 @@ export default function NotesById() {
 
   const note = notes.find((n) => n.id === params.id);
 
-  const onChangeTitle = (event: ChangeEvent<HTMLInputElement, HTMLInputElement>) => {
+  const onChange = (markdown: string) => {
     if (!note?.id) return;
-    updateNote(note.id, { title: event.target.value });
-  };
-
-  const onChangeContent = (event: ChangeEvent<HTMLTextAreaElement, HTMLTextAreaElement>) => {
-    if (!note?.id) return;
-    updateNote(note.id, { content: event.target.value });
+    updateNote(note.id, { content: markdown })
   };
 
   if (!loaded) return (
@@ -48,26 +42,11 @@ export default function NotesById() {
   );
 
   return (
-    <div className="flex flex-col items-center gap-4">
-      <TextInput
-        className="w-full"
-        variant="unstyled"
-        placeholder="Untitled"
-        value={note.title}
-        onChange={onChangeTitle}
-        size="xl"
-        // styles={{ input: { fontSize: "1.5rem" } }}
-      />
-      <hr className="w-full text-(--mantine-color-default-border)" />
-      <Textarea
-        className="w-full"
-        variant="unstyled"
-        autosize
-        autoComplete="off"
-        placeholder="Start Typing..."
-        value={note.content}
-        onChange={onChangeContent}
-      />
-    </div>
+    <NoteEditor
+      key={note.id}
+      noteId={note.id}
+      content={note.content}
+      onChange={onChange}
+    />
   );
 }
