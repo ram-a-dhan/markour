@@ -42,6 +42,10 @@ export default function NotesLayout({ children }: PropsWithChildren) {
             desktop: !openedNavbarDesktop,
           },
         }}
+        classNames={{
+          root: "h-full",
+          main: "h-full flex flex-col",
+        }}
       >
         <NoteList
           openDrawer={openDrawer}

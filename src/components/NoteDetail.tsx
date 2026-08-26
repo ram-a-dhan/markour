@@ -88,7 +88,9 @@ export default function NoteDetail({
       </AppShell.Header>
 
       {/* NOTE CONTENT */}
-      <AppShell.Main>{children}</AppShell.Main>
+      <AppShell.Main>
+        {children}
+      </AppShell.Main>
     </>
   );
 }

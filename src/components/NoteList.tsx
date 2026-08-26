@@ -67,20 +67,23 @@ export default function NoteList({
         grow
         component={ScrollArea}
       >
-        {notes.map((item) => (
-          <div
-            key={item.id}
-            onClick={() => onClickOpen(item.id)}
-            className="p-4 cursor-pointer hover:bg-(--mantine-color-default-hover) active:bg-(--mantine-color-default-border) select-none"
-          >
-            <p className="mb-1 truncate">
-              {item.title || "Untitled"}
-            </p>
-            <p className="text-xs text-(--mantine-color-dimmed) truncate">
-              {item.content}
-            </p>
-          </div>
-        ))}
+        {notes.map((item) => {
+          const [title, ...content] = item.content.trimStart().split("\n");
+          return (
+            <div
+              key={item.id}
+              onClick={() => onClickOpen(item.id)}
+              className="p-4 cursor-pointer hover:bg-(--mantine-color-default-hover) active:bg-(--mantine-color-default-border) select-none"
+            >
+              <p className="mb-1 truncate">
+                {title.replace(/(&nbsp;|#)/g, "").trim() || "Untitled"}
+              </p>
+              <p className="text-xs text-(--mantine-color-dimmed) truncate">
+                {content.join(" ").trim()}
+              </p>
+            </div>
+          );
+        })}
       </AppShell.Section>
     </AppShell.Navbar>
   );

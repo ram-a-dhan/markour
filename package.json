@@ -16,6 +16,10 @@
     "@mantine/core": "^9.5.1",
     "@mantine/hooks": "^9.5.1",
     "@phosphor-icons/react": "^2.1.10",
+    "@tiptap/markdown": "^3.30.3",
+    "@tiptap/pm": "^3.30.3",
+    "@tiptap/react": "^3.30.3",
+    "@tiptap/starter-kit": "^3.30.3",
     "dotenv": "^17.4.2",
     "drizzle-orm": "1.0.0-rc.4",
     "idb": "^8.0.3",
@@ -27,6 +31,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@tailwindcss/typography": "^0.5.20",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^20",
     "@types/react": "^19",
