@@ -4,6 +4,8 @@ import { useEffect, useRef } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { Markdown } from "@tiptap/markdown";
+import { TableKit } from "@tiptap/extension-table";
+import { TaskList, TaskItem } from "@tiptap/extension-list";
 import styles from "@/src/styles/modules/NoteEditor.module.scss";
 
 type NoteEditorProps = {
@@ -16,18 +18,23 @@ export function NoteEditor({ noteId, content, onChange }: NoteEditorProps) {
   const loadedNoteId = useRef<string | null>(null);
 
   const editor = useEditor({
-    extensions: [StarterKit, Markdown],
+    extensions: [
+      StarterKit,
+      Markdown,
+      TableKit,
+      TaskList,
+      TaskItem,
+    ],
     content,
     contentType: "markdown",
     immediatelyRender: false,
     editorProps: {
       attributes: {
-        class: "focus:outline-none h-full flex-1 m-0!",
+        class: "focus:outline-none h-full flex-1",
       },
     },
     onUpdate: ({ editor }) => {
-      if (!editor.markdown) return;
-      const markdown = editor.markdown.serialize(editor.getJSON());
+      const markdown = editor.getMarkdown();
       onChange(markdown);
     },
   });
