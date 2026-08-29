@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/src/db";
-import { notes as noteSchema } from "@/src/db/schema";
-import { and, eq } from "drizzle-orm";
+import { notes as noteSchema, noteTags as noteTagSchema, tags as tagSchema } from "@/src/db/schema";
+import { and, eq, inArray } from "drizzle-orm";
 import { serializeNote } from "@/src/utils/serialize";
 import { requireAuth } from "@/src/lib/requireAuth";
 
@@ -22,6 +22,7 @@ export async function POST(req: NextRequest) {
     content,
     updatedAt,
     deletedAt,
+    tagIds,
     clientId
   } = body as INotePushPayload;
 
@@ -50,8 +51,17 @@ export async function POST(req: NextRequest) {
   }
 
   if (updatedAt <= current.updatedAt.getTime()) {
+    const [existingTags] = await db
+      .select({ tagId: noteTagSchema.tagId })
+      .from(noteTagSchema)
+      .where(eq(noteTagSchema.noteId, id));
+
     return NextResponse.json(
-      { accepted: false, reason: "conflict", serverNote: serializeNote(current) },
+      {
+        accepted: false,
+        reason: "conflict",
+        serverNote: serializeNote(current, existingTags ? [existingTags.tagId] : []),
+      },
       { status: 409 }
     );
   }
@@ -73,9 +83,45 @@ export async function POST(req: NextRequest) {
     )
     .returning();
 
+
+  // Replace-the-whole-set: only touch tags if the client actually sent
+  // a tagIds array — omitting the field entirely means "don't touch tags."
+  if (tagIds !== undefined) {
+    // Only allow tags that actually belong to this user — prevents
+    // attaching someone else's tag ID even if guessed.
+    const validTags = tagIds.length
+      ? await db
+          .select({ id: tagSchema.id })
+          .from(tagSchema)
+          .where(
+            and(
+              eq(tagSchema.userId, auth.userId),
+              inArray(tagSchema.id, tagIds),
+            ),
+          )
+      : [];
+
+    const validTagIds = validTags.map((t) => t.id);
+
+    await db
+      .delete(noteTagSchema)
+      .where(eq(noteTagSchema.noteId, id));
+
+    if (validTagIds.length) {
+      await db
+        .insert(noteTagSchema)
+        .values(validTagIds.map((tagId) => ({ noteId: id, tagId })));
+    }
+  }
+
+  const finalTagLinks = await db
+    .select()
+    .from(noteTagSchema)
+    .where(eq(noteTagSchema.noteId, id));
+
   return NextResponse.json({
     accepted: true,
-    serverNote: serializeNote(updated),
+    serverNote: serializeNote(updated, finalTagLinks.map((l) => l.tagId)),
     receivedAt: Date.now(),
     fromClient: clientId ?? null,
   });
