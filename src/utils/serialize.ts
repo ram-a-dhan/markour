@@ -13,7 +13,7 @@ export const serializeUser = (row: IUserBE): IUserFE => {
   };
 };
 
-export const serializeNote = (row: INoteBE): INoteFE => {
+export const serializeNote = (row: INoteBE, tagIds: string[] = []): INoteFE => {
   return {
     id: row.id,
     userId: row.userId,
@@ -23,5 +23,15 @@ export const serializeNote = (row: INoteBE): INoteFE => {
     updatedAt: row.updatedAt.getTime(),
     deletedAt: row.deletedAt ? row.deletedAt.getTime() : null,
     version: row.version,
+    tagIds,
+  };
+};
+
+export const serializeTag = (row: ITagBE): ITagFE => {
+  return {
+    id: row.id,
+    userId: row.userId,
+    name: row.name,
+    createdAt: row.createdAt.getTime(),
   };
 };

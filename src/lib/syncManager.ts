@@ -25,6 +25,8 @@ export async function pushDirtyNotes(userId: string): Promise<void> {
             content: note.content,
             createdAt: note.createdAt,
             updatedAt: note.updatedAt,
+            // no tagIds here — new notes always start untagged, per your
+            // earlier decision, and POST /api/notes doesn't read tagIds anyway
           }),
         });
 
@@ -42,19 +44,20 @@ export async function pushDirtyNotes(userId: string): Promise<void> {
               content: note.content,
               updatedAt: note.updatedAt,
               deletedAt: note.deletedAt,
+              tagIds: note.tagIds,
             }),
           });
           if (pushRes.ok) {
-            const data = await pushRes.json();
-            await putLocalNote({ ...data.serverNote, userId, dirty: false, synced: true });
+            const data = (await pushRes.json()) as { serverNote: INoteFE };
+            await putLocalNote({ ...data.serverNote, userId, tagIds: data.serverNote.tagIds ?? [], dirty: false, synced: true });
           }
           continue;
         }
 
         if (!res.ok) continue; // retry next cycle
 
-        const data = await res.json();
-        await putLocalNote({ ...data.note, userId, dirty: false, synced: true });
+        const data = (await res.json()) as { note: INoteFE };
+        await putLocalNote({ ...data.note, userId, tagIds: [], dirty: false, synced: true });
         continue;
       }
 
@@ -69,18 +72,19 @@ export async function pushDirtyNotes(userId: string): Promise<void> {
           content: note.content,
           updatedAt: note.updatedAt,
           deletedAt: note.deletedAt,
+          tagIds: note.tagIds,
         }),
       });
 
       if (res.status === 409) {
-        const data = await res.json();
-        await putLocalNote({ ...data.serverNote, userId, dirty: false, synced: true });
+        const data = (await res.json()) as { serverNote: INoteFE };
+        await putLocalNote({ ...data.serverNote, userId, tagIds: data.serverNote.tagIds ?? [], dirty: false, synced: true });
         continue;
       }
       if (!res.ok) continue;
 
-      const data = await res.json();
-      await putLocalNote({ ...data.serverNote, userId, dirty: false, synced: true });
+      const data = (await res.json()) as { serverNote: INoteFE };
+      await putLocalNote({ ...data.serverNote, userId,tagIds: data.serverNote.tagIds ?? [],  dirty: false, synced: true });
     } catch {
       // offline — leave dirty, retry next cycle
     }
@@ -99,7 +103,7 @@ export async function pullRemoteChanges(userId: string): Promise<void> {
     const data = (await res.json()) as { notes: INoteFE[]; serverTime: number };
 
     for (const remote of data.notes) {
-      await putLocalNote({ ...remote, userId, dirty: false, synced: true });
+      await putLocalNote({ ...remote, userId, tagIds: remote.tagIds ?? [], dirty: false, synced: true });
     }
 
     await setLastSyncedAt(data.serverTime);
@@ -116,7 +120,7 @@ export async function fullResync(userId: string): Promise<void> {
     if (!res.ok) return;
     const data = (await res.json()) as { notes: INoteFE[]; serverTime: number };
     for (const remote of data.notes) {
-      await putLocalNote({ ...remote, userId, dirty: false, synced: true });
+      await putLocalNote({ ...remote, userId, tagIds: remote.tagIds ?? [], dirty: false, synced: true });
     }
     await setLastSyncedAt(data.serverTime);
   } catch {

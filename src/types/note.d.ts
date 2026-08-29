@@ -18,4 +18,5 @@ declare interface INoteFE {
   updatedAt: number;
   deletedAt: number | null;
   version: number;
+  tagIds: string[];
 }
