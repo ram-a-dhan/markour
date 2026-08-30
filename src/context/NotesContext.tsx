@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, PropsWithChildren } from "react";
+import { createContext, useContext, type PropsWithChildren } from "react";
 import { useNotes as useNotesHook } from "@/src/hooks/useNotes";
 
 type INotesContextValue = ReturnType<typeof useNotesHook>;

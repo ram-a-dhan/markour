@@ -67,6 +67,7 @@ export function useNotes() {
       createdAt: now,
       updatedAt: now,
       deletedAt: null,
+      tagIds: [],
       version: 1,
       dirty: true,
       synced: false,
@@ -121,12 +122,26 @@ export function useNotes() {
     [userId, refresh],
   );
 
+  const updateNoteTags = useCallback(
+    async (id: string, tagIds: string[]) => {
+      if (!userId) return;
+      const current = await getLocalNote(id);
+      if (!current) return;
+      await putLocalNote({ ...current, tagIds, updatedAt: Date.now(), dirty: true });
+      await refresh();
+      await pushDirtyNotes(userId);
+      await refresh();
+    },
+    [userId, refresh]
+  );
+
   return {
     notes,
     loaded,
     createNote,
     updateNote,
     deleteNote,
+    updateNoteTags,
     refresh
   };
 }

@@ -6,7 +6,7 @@ import {
   useEffect,
   useState,
   useCallback,
-  PropsWithChildren,
+  type PropsWithChildren,
 } from "react";
 import { useRouter } from "next/navigation";
 import {
