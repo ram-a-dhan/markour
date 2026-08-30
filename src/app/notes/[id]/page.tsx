@@ -4,6 +4,7 @@ import { useParams } from "next/navigation";
 import { CircleNotchIcon } from "@phosphor-icons/react";
 import { useNotes } from "@/src/context/NotesContext";
 import { NoteEditor } from "@/src/components/NoteEditor";
+import { NoteTagsInput } from "@/src/components/NoteTagsInput";
 
 export default function NotesById() {
   const params = useParams<{ id: string }>();
@@ -42,11 +43,17 @@ export default function NotesById() {
   );
 
   return (
-    <NoteEditor
-      key={note.id}
-      noteId={note.id}
-      content={note.content}
-      onChange={onChange}
-    />
+    <>
+      <NoteEditor
+        key={note.id}
+        noteId={note.id}
+        content={note.content}
+        onChange={onChange}
+      />
+      <NoteTagsInput
+        noteId={note.id}
+        tagIds={note.tagIds}
+      />
+    </>
   );
 }
