@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/src/db";
 import { notes as noteSchema, noteTags as noteTagSchema } from "@/src/db/schema";
-import { and, eq, inArray, isNull } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 import { serializeNote } from "@/src/utils/serialize";
 import { requireAuth } from "@/src/lib/requireAuth";
 
@@ -12,17 +12,14 @@ export async function GET(req: NextRequest) {
   const rows = await db
     .select()
     .from(noteSchema)
-    .where(
-      and(
-        eq(noteSchema.userId, auth.userId),
-        isNull(noteSchema.deletedAt),
-      ),
-    );
+    .where(eq(noteSchema.userId, auth.userId));
 
-  const allTagLinks = await db
-    .select()
-    .from(noteTagSchema)
-    .where(inArray(noteTagSchema.noteId, rows.map((r) => r.id)));
+  const allTagLinks = rows.length
+    ? await db
+        .select()
+        .from(noteTagSchema)
+        .where(inArray(noteTagSchema.noteId, rows.map((r) => r.id)))
+    : [];
 
   const tagsByNote = new Map<string, string[]>();
   for (const link of allTagLinks) {

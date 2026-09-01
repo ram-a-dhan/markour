@@ -1,8 +1,10 @@
+import { useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { ActionIcon, AppShell, ScrollArea, Tooltip } from "@mantine/core";
 import { GearFineIcon, NotePencilIcon } from "@phosphor-icons/react";
 import { useNotes } from "@/src/context/NotesContext";
-import { NOTE_DETAIL_PATH } from "../constants/url";
+import { useTags } from "@/src/context/TagsContext";
+import { NOTE_DETAIL_PATH } from "@/src/constants/url";
 
 interface INoteListProps {
   openDrawer: () => void;
@@ -17,7 +19,12 @@ export default function NoteList({
 }: INoteListProps) {
   const router = useRouter();
 
-  const { notes, createNote } = useNotes();
+  const { notes, createNote, view } = useNotes();
+  const { tags } = useTags();
+
+  const selectedTag = useMemo(() => {
+    return tags.find((t) => t.id === view.tagId);
+  }, [tags, view.tagId]);
 
   const onClickCreate = async () => {
     const id = await createNote();
@@ -36,7 +43,7 @@ export default function NoteList({
       <AppShell.Section
         p="md"
         h={60}
-        className="grow-0 shrink-0 flex items-center justify-between border-b border-b-(--app-shell-border-color) overflow-hidden"
+        className="grow-0 shrink-0 flex items-center justify-between gap-4 border-b border-b-(--app-shell-border-color) overflow-hidden"
       >
         <Tooltip label="Settings">
           <ActionIcon
@@ -48,17 +55,28 @@ export default function NoteList({
           </ActionIcon>
         </Tooltip>
 
-        <h2>Notes</h2>
+        <h2 className="text-ellipsis text-nowrap line-clamp-1">
+           <span className="capitalize">{view.mode}</span>
+           {!!selectedTag?.name && <span>: {selectedTag.name}</span>}
+        </h2>
 
-        <Tooltip label="Create New Note">
-          <ActionIcon
-            variant="transparent"
-            color="dark"
-            onClick={onClickCreate}
-          >
-            <NotePencilIcon size={26} />
-          </ActionIcon>
-        </Tooltip>
+        {view.mode === "notes" && (
+          <Tooltip label="Create New Note">
+            <ActionIcon
+              variant="transparent"
+              color="dark"
+              onClick={onClickCreate}
+            >
+              <NotePencilIcon size={26} />
+            </ActionIcon>
+          </Tooltip>
+        )}
+        {view.mode === "trash" && (
+          <div className="w-7" />
+        )}
+        {view.mode === "tag" && (
+          <div className="w-7" />
+        )}
       </AppShell.Section>
 
       {/* NOTE LIST */}

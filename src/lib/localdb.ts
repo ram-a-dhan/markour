@@ -32,11 +32,14 @@ function getDB() {
   return dbPromise;
 }
 
-export async function getAllLocalNotes(userId: string): Promise<ILocalNote[]> {
+export async function getAllLocalNotes(
+  userId: string,
+  filter: (note: ILocalNote) => boolean = () => true
+): Promise<ILocalNote[]> {
   const db = await getDB();
   const all = await db.getAll("notes");
   return all
-    .filter((n) => n.userId === userId && !n.deletedAt)
+    .filter((n) => n.userId === userId && filter(n))
     .sort((a, b) => b.updatedAt - a.updatedAt);
 }
 
