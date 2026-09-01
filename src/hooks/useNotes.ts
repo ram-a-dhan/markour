@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import {
   ILocalNote,
@@ -22,13 +22,14 @@ export function useNotes() {
   const { user } = useSession();
   const userId = user?.id ?? null;
 
-  const [notes, setNotes] = useState<ILocalNote[]>([]);
+  const [view, setView] = useState<IView>({ mode: "notes" });
+  const [allNotes, setAllNotes] = useState<ILocalNote[]>([]);
   const [loaded, setLoaded] = useState(false);
   const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const refresh = useCallback(async () => {
     if (!userId) return;
-    setNotes(await getAllLocalNotes(userId));
+    setAllNotes(await getAllLocalNotes(userId));
   }, [userId]);
 
   // Initial load: read whatever's cached instantly, then reconcile
@@ -53,8 +54,20 @@ export function useNotes() {
     return () => clearInterval(interval);
   }, [userId, refresh]);
 
+  const notes = useMemo(() => {
+    switch (view.mode) {
+      case "tag":
+        return allNotes.filter((n) => n.tagIds.includes(view.tagId!));
+      case "trash":
+        return allNotes.filter((n) => !!n.deletedAt);
+      case "notes":
+      default:
+        return allNotes.filter((n) => !n.deletedAt);
+    }
+  }, [allNotes, view.mode, view.tagId]);
+
   const createNote = useCallback(async () => {
-    if (!userId) throw new Error("cannot create a note without a logged-in user");
+    if (!userId) throw new Error("Cannot create a note without a logged-in user.");
     const id = uuidv4();
     const existing = await getLocalNote(id);
     if (existing) throw new Error("UUID collision! Please try again.")
@@ -83,7 +96,7 @@ export function useNotes() {
       id: string,
       patch: Partial<Pick<ILocalNote, "title" | "content">>,
     ) => {
-      if (!userId) throw new Error("cannot update a note without a logged-in user");
+      if (!userId) throw new Error("Cannot update a note without a logged-in user.");
       const current = await getLocalNote(id);
       if (!current) return;
       const updated: ILocalNote = {
@@ -106,7 +119,7 @@ export function useNotes() {
 
   const deleteNote = useCallback(
     async (id: string) => {
-      if (!userId) throw new Error("cannot delete a note without a logged-in user");
+      if (!userId) throw new Error("Cannot delete a note without a logged-in user.");
       const current = await getLocalNote(id);
       if (!current) return;
       await putLocalNote({
@@ -122,12 +135,35 @@ export function useNotes() {
     [userId, refresh],
   );
 
-  const updateNoteTags = useCallback(
-    async (id: string, tagIds: string[]) => {
-      if (!userId) return;
+  const restoreNote = useCallback(
+    async (id: string) => {
+      if (!userId) throw new Error("Cannot restore a note without a logged-in user.");
       const current = await getLocalNote(id);
       if (!current) return;
-      await putLocalNote({ ...current, tagIds, updatedAt: Date.now(), dirty: true });
+      await putLocalNote({
+        ...current,
+        deletedAt: null,
+        updatedAt: Date.now(),
+        dirty: true,
+      });
+      await refresh();
+      await pushDirtyNotes(userId);
+      await refresh();
+    },
+    [userId, refresh]
+  );
+
+  const updateNoteTags = useCallback(
+    async (id: string, tagIds: string[]) => {
+      if (!userId) throw new Error("Cannot update note tags without a logged-in user.");
+      const current = await getLocalNote(id);
+      if (!current) return;
+      await putLocalNote({
+        ...current,
+        tagIds,
+        updatedAt: Date.now(),
+        dirty: true,
+      });
       await refresh();
       await pushDirtyNotes(userId);
       await refresh();
@@ -141,7 +177,10 @@ export function useNotes() {
     createNote,
     updateNote,
     deleteNote,
+    restoreNote,
     updateNoteTags,
-    refresh
+    refresh,
+    view,
+    setView,
   };
 }
