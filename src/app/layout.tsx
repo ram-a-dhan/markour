@@ -1,4 +1,5 @@
 import "@mantine/core/styles.css";
+import "@mantine/notifications/styles.css";
 import "@/src/styles/tailwind.css";
 import "@/src/styles/reset.scss";
 import "@/src/styles/global.scss";

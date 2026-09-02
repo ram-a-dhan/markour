@@ -13,6 +13,7 @@ export const CALLBACK_GOOGLE_AUTH_API_PATH = GOOGLE_AUTH_API_PATH + "/callback";
 export const SESSION_API_PATH = AUTH_API_PATH + "/session";
 export const LOGOUT_API_PATH = AUTH_API_PATH + "/logout";
 export const NOTES_API_PATH = API_PATH + "/notes";
+export const NOTES_PURGE_API_PATH = NOTES_API_PATH + "/purge";
 export const TAGS_API_PATH = API_PATH + "/tags";
 export const TAGS_BY_ID_API_PATH = (id: string) => `${TAGS_API_PATH}/${id}`;
 export const SYNC_API_PATH = API_PATH + "/sync";

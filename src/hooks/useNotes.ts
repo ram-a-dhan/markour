@@ -7,6 +7,7 @@ import {
   getAllLocalNotes,
   putLocalNote,
   getLocalNote,
+  deleteLocalNotes,
 } from "@/src/lib/localdb";
 import {
   pushDirtyNotes,
@@ -14,6 +15,7 @@ import {
   fullResync,
 } from "@/src/lib/syncManager";
 import { useSession } from "@/src/context/SessionContext";
+import { NOTES_PURGE_API_PATH } from "@/src/constants/url";
 
 const DEBOUNCE_MS = 1500;
 const POLL_MS = 3000;
@@ -91,85 +93,96 @@ export function useNotes() {
     return newNote.id;
   }, [userId, refresh]);
 
-  const updateNote = useCallback(
-    async (
-      id: string,
-      patch: Partial<Pick<ILocalNote, "title" | "content">>,
-    ) => {
-      if (!userId) throw new Error("Cannot update a note without a logged-in user.");
-      const current = await getLocalNote(id);
-      if (!current) return;
-      const updated: ILocalNote = {
-        ...current,
-        ...patch,
-        updatedAt: Date.now(),
-        dirty: true,
-      };
-      await putLocalNote(updated);
-      await refresh();
+  const updateNote = useCallback(async (id: string, patch: Partial<Pick<ILocalNote, "title" | "content">>) => {
+    if (!userId) throw new Error("Cannot update a note without a logged-in user.");
+    const current = await getLocalNote(id);
+    if (!current) return;
+    const updated: ILocalNote = {
+      ...current,
+      ...patch,
+      updatedAt: Date.now(),
+      dirty: true,
+    };
+    await putLocalNote(updated);
+    await refresh();
 
-      if (debounceTimer.current) clearTimeout(debounceTimer.current);
-      debounceTimer.current = setTimeout(async () => {
-        await pushDirtyNotes(userId);
-        await refresh();
-      }, DEBOUNCE_MS);
-    },
-    [userId, refresh],
-  );
-
-  const deleteNote = useCallback(
-    async (id: string) => {
-      if (!userId) throw new Error("Cannot delete a note without a logged-in user.");
-      const current = await getLocalNote(id);
-      if (!current) return;
-      await putLocalNote({
-        ...current,
-        deletedAt: Date.now(),
-        updatedAt: Date.now(),
-        dirty: true,
-      });
-      await refresh();
+    if (debounceTimer.current) clearTimeout(debounceTimer.current);
+    debounceTimer.current = setTimeout(async () => {
       await pushDirtyNotes(userId);
       await refresh();
-    },
-    [userId, refresh],
-  );
+    }, DEBOUNCE_MS);
+  }, [userId, refresh]);
 
-  const restoreNote = useCallback(
-    async (id: string) => {
-      if (!userId) throw new Error("Cannot restore a note without a logged-in user.");
-      const current = await getLocalNote(id);
-      if (!current) return;
-      await putLocalNote({
-        ...current,
-        deletedAt: null,
-        updatedAt: Date.now(),
-        dirty: true,
-      });
-      await refresh();
-      await pushDirtyNotes(userId);
-      await refresh();
-    },
-    [userId, refresh]
-  );
+  const deleteNote = useCallback(async (id: string) => {
+    if (!userId) throw new Error("Cannot delete a note without a logged-in user.");
+    const current = await getLocalNote(id);
+    if (!current) return;
+    await putLocalNote({
+      ...current,
+      deletedAt: Date.now(),
+      updatedAt: Date.now(),
+      dirty: true,
+    });
+    await refresh();
+    await pushDirtyNotes(userId);
+    await refresh();
+  }, [userId, refresh]);
 
-  const updateNoteTags = useCallback(
-    async (id: string, tagIds: string[]) => {
-      if (!userId) throw new Error("Cannot update note tags without a logged-in user.");
-      const current = await getLocalNote(id);
-      if (!current) return;
-      await putLocalNote({
-        ...current,
-        tagIds,
-        updatedAt: Date.now(),
-        dirty: true,
-      });
-      await refresh();
-      await pushDirtyNotes(userId);
-      await refresh();
-    },
-    [userId, refresh]
-  );
+  const restoreNote = useCallback(async (id: string) => {
+    if (!userId) throw new Error("Cannot restore a note without a logged-in user.");
+    const current = await getLocalNote(id);
+    if (!current) return;
+    await putLocalNote({
+      ...current,
+      deletedAt: null,
+      updatedAt: Date.now(),
+      dirty: true,
+    });
+    await refresh();
+    await pushDirtyNotes(userId);
+    await refresh();
+  }, [userId, refresh]);
+
+  const purgeNotes = useCallback(async (ids: string[]) => {
+    if (!userId) throw new Error("Cannot purge notes without a logged-in user.");
+    if (ids.length === 0) throw new Error("Cannot purge notes without ids.");
+
+    const res = await fetch(NOTES_PURGE_API_PATH, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ids }),
+    });
+
+    if (!res.ok) {
+      const error = await res.json();
+      throw new Error(error?.error || error?.message || error);
+    }
+
+    const data = (await res.json()) as { purgedIds: string[] };
+    await deleteLocalNotes(data.purgedIds);
+    // if offline/failed: local copies stay put, still tombstoned,
+    // still visible in trash — user can retry purge later. No local-only
+    // hard delete without server confirmation, to avoid a note vanishing
+    // locally while still existing server-side (would resurrect on next pull).
+
+    await refresh();
+  }, [userId, refresh]);
+
+  const updateNoteTags = useCallback(async (id: string, tagIds: string[]) => {
+    if (!userId) throw new Error("Cannot update note tags without a logged-in user.");
+    const current = await getLocalNote(id);
+    if (!current) return;
+    await putLocalNote({
+      ...current,
+      tagIds,
+      updatedAt: Date.now(),
+      dirty: true,
+    });
+    await refresh();
+    await pushDirtyNotes(userId);
+    await refresh();
+  }, [userId, refresh]);
 
   return {
     notes,
@@ -178,6 +191,7 @@ export function useNotes() {
     updateNote,
     deleteNote,
     restoreNote,
+    purgeNotes,
     updateNoteTags,
     refresh,
     view,

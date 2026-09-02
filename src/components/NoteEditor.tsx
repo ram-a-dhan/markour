@@ -13,9 +13,10 @@ type NoteEditorProps = {
   noteId: string;
   content: string;
   onChange: (markdown: string) => void;
+  disabled: boolean;
 };
 
-export function NoteEditor({ noteId, content, onChange }: NoteEditorProps) {
+export function NoteEditor({ noteId, content, onChange, disabled}: NoteEditorProps) {
   const loadedNoteId = useRef<string | null>(null);
 
   const editor = useEditor({
@@ -41,6 +42,7 @@ export function NoteEditor({ noteId, content, onChange }: NoteEditorProps) {
       const markdown = editor.getMarkdown();
       onChange(markdown);
     },
+    editable: !disabled,
   });
 
   useEffect(() => {

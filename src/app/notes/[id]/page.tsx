@@ -49,10 +49,12 @@ export default function NotesById() {
         noteId={note.id}
         content={note.content}
         onChange={onChange}
+        disabled={!!note.deletedAt}
       />
       <NoteTagsInput
         noteId={note.id}
         tagIds={note.tagIds}
+        disabled={!!note.deletedAt}
       />
     </>
   );

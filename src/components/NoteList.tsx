@@ -1,10 +1,12 @@
 import { useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { ActionIcon, AppShell, ScrollArea, Tooltip } from "@mantine/core";
-import { GearFineIcon, NotePencilIcon } from "@phosphor-icons/react";
+import { modals } from "@mantine/modals";
+import { notifications } from "@mantine/notifications";
+import { GearFineIcon, NotePencilIcon, TrashIcon } from "@phosphor-icons/react";
 import { useNotes } from "@/src/context/NotesContext";
 import { useTags } from "@/src/context/TagsContext";
-import { NOTE_DETAIL_PATH } from "@/src/constants/url";
+import { NOTE_DETAIL_PATH, NOTE_LIST_PATH } from "@/src/constants/url";
 
 interface INoteListProps {
   openDrawer: () => void;
@@ -19,7 +21,7 @@ export default function NoteList({
 }: INoteListProps) {
   const router = useRouter();
 
-  const { notes, createNote, view } = useNotes();
+  const { notes, createNote, purgeNotes, view } = useNotes();
   const { tags } = useTags();
 
   const selectedTag = useMemo(() => {
@@ -35,6 +37,54 @@ export default function NoteList({
   const onClickOpen = (id: string) => {
     if (openedNavbarMobile) closeNavbarMobile();
     router.replace(NOTE_DETAIL_PATH(id));
+  };
+
+  const onConfirmPurge = async () => {
+    await purgeNotes(notes.map((n) => n.id));
+    if (!openedNavbarMobile) closeNavbarMobile();
+    router.replace(NOTE_LIST_PATH);
+  }
+
+  const onClickPurge = async () => {
+    let count = 10;
+    const modalId = "confirm-delete-permanently-many";
+    modals.openConfirmModal({
+      modalId,
+      title: "Clear Trash",
+      children: (
+        <div className="flex flex-col gap-4">
+          <p>Are you sure deleting all notes in trash permanently? They will be lost forever.</p>
+          <p>To proceed please click the button 10 times.</p>
+        </div>
+      ),
+      labels: { confirm: <span>Clear Trash ({count})</span>, cancel: "Cancel" },
+      confirmProps: { color: "red" },
+      closeOnConfirm: false,
+      onConfirm: async () => {
+        if (count > 1) {
+          count--;
+          modals.updateModal({
+            modalId,
+            confirmProps: { color: "red" },
+            labels: { confirm: <span>Clear Trash ({count})</span>, cancel: "Cancel" },
+          });
+          return;
+        }
+
+        try {
+          modals.updateModal({
+            modalId,
+            confirmProps: { color: "red", loading: true },
+            labels: { confirm: <span>Clear Trash</span>, cancel: "Cancel" },
+          });
+          await onConfirmPurge();
+          modals.close(modalId);
+        } catch (error) {
+          modals.updateModal({ modalId, confirmProps: { color: "red", loading: false } });
+          notifications.show({ title: "Error", message: (error as Error).message , color: "red" });
+        }
+      },
+    });
   };
 
   return (
@@ -72,7 +122,21 @@ export default function NoteList({
           </Tooltip>
         )}
         {view.mode === "trash" && (
-          <div className="w-7" />
+          <>
+            {!!notes.length ? (
+              <Tooltip label="Clear Trash">
+                <ActionIcon
+                  variant="transparent"
+                  color="dark"
+                  onClick={() => onClickPurge()}
+                >
+                  <TrashIcon size={26} />
+                </ActionIcon>
+              </Tooltip>
+            ): (
+              <div className="w-7" />
+            )}
+          </>
         )}
         {view.mode === "tag" && (
           <div className="w-7" />
