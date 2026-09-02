@@ -9,9 +9,10 @@ import { type KeyboardEvent, useState } from "react";
 interface INoteTagsInputProps {
   noteId: string;
   tagIds: string[];
+  disabled: boolean;
 }
 
-export function NoteTagsInput({ noteId, tagIds }: INoteTagsInputProps) {
+export function NoteTagsInput({ noteId, tagIds, disabled }: INoteTagsInputProps) {
   const [searchValue, setSearchValue] = useState("");
   const { tags, createTag, refresh } = useTags();
   const { updateNoteTags } = useNotes();
@@ -64,7 +65,7 @@ export function NoteTagsInput({ noteId, tagIds }: INoteTagsInputProps) {
     <TagsInput
       variant="unstyled"
       leftSection={<TagIcon size={24} />}
-      placeholder="Add Tags..."
+      placeholder={disabled ? "" : "Add Tags..."}
       value={currentNames}
       data={tags.map((t) => t.name)}
       onChange={onChange}
@@ -77,6 +78,7 @@ export function NoteTagsInput({ noteId, tagIds }: INoteTagsInputProps) {
       classNames={{
         pill: "[:where([data-mantine-color-scheme='dark'])_&]:bg-(--mantine-color-gray-8)!"
       }}
+      readOnly={disabled}
     />
   );
 }

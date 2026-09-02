@@ -72,7 +72,7 @@ export async function POST(req: NextRequest) {
       title: title ?? current.title,
       content: content ?? current.content,
       updatedAt: new Date(updatedAt),
-      deletedAt: deletedAt != null ? new Date(deletedAt) : current.deletedAt,
+      deletedAt: deletedAt != null ? new Date(deletedAt) : null,
       version: current.version + 1,
     })
     .where(

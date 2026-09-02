@@ -34,13 +34,14 @@ function getDB() {
 
 export async function getAllLocalNotes(
   userId: string,
-  filter: (note: ILocalNote) => boolean = () => true
+  filter: (note: ILocalNote) => boolean = () => true,
+  sorter: (a: ILocalNote, b: ILocalNote) => number = (a, b) => b.updatedAt - a.updatedAt,
 ): Promise<ILocalNote[]> {
   const db = await getDB();
   const all = await db.getAll("notes");
   return all
     .filter((n) => n.userId === userId && filter(n))
-    .sort((a, b) => b.updatedAt - a.updatedAt);
+    .sort(sorter);
 }
 
 export async function getLocalNote(id: string): Promise<ILocalNote | undefined> {
@@ -85,4 +86,11 @@ export async function clearAllLocalNotes(): Promise<void> {
   const db = await getDB();
   await db.clear("notes");
   await db.clear("meta");
+}
+
+export async function deleteLocalNotes(ids: string[]): Promise<void> {
+  const db = await getDB();
+  const tx = db.transaction("notes", "readwrite");
+  await Promise.all(ids.map((id) => tx.store.delete(id)));
+  await tx.done;
 }
