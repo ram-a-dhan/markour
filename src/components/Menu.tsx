@@ -1,18 +1,36 @@
+import { useEffect, type MouseEventHandler } from "react";
 import { useRouter } from "next/navigation";
-import { ActionIcon, Avatar, Collapse, NavLink, Tooltip } from "@mantine/core";
+import {
+  ActionIcon,
+  Avatar,
+  Button,
+  Collapse,
+  NavLink,
+  ScrollArea,
+  Tooltip,
+} from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { CaretDownIcon, NotepadIcon, SignOutIcon, TagIcon, TrashIcon } from "@phosphor-icons/react";
+import {
+  CaretDownIcon,
+  NotepadIcon,
+  SignOutIcon,
+  TagIcon,
+  TrashIcon,
+} from "@phosphor-icons/react";
 import { useSession } from "@/src/context/SessionContext";
 import { useNotes } from "@/src/context/NotesContext";
 import { useTags } from "@/src/context/TagsContext";
+import TagItem from "@/src/components/TagItem";
 import { NOTE_LIST_PATH } from "@/src/constants/url";
 
 interface IMenuProps {
+  openedDrawer: boolean;
   closeDrawer: () => void;
 }
 
-export default function Menu({ closeDrawer }: IMenuProps) {
+export default function Menu({ openedDrawer, closeDrawer }: IMenuProps) {
   const [expandedTags, { toggle: toggleTags }] = useDisclosure();
+  const [editModeTags, { toggle: toggleEdit, close: closeEdit }] = useDisclosure();
 
   const router = useRouter();
 
@@ -20,16 +38,25 @@ export default function Menu({ closeDrawer }: IMenuProps) {
   const { view, setView } = useNotes();
   const { tags } = useTags();
 
-  const onClickNavItem = (mode: IView["mode"], tagId?: IView["tagId"]) => {
-    setView({ mode, tagId: tagId ?? undefined });
+  useEffect(() => {
+    if (!expandedTags || !openedDrawer) closeEdit();
+  }, [expandedTags, openedDrawer, closeEdit]);
+
+  const onClickNavItem = (mode: IView["mode"]) => {
+    setView({ mode, tagId: undefined });
     router.replace(NOTE_LIST_PATH);
     closeDrawer();
   };
-  
+
+  const onClickEditMode: MouseEventHandler<HTMLButtonElement> = (event) => {
+    event.stopPropagation();
+    toggleEdit();
+  };
+
   return (
     <>
       {/* MENU LIST */}
-      <div className="flex-1">
+      <ScrollArea className="h-full">
         <NavLink
           leftSection={<NotepadIcon size={24} />}
           label="Notes"
@@ -57,39 +84,44 @@ export default function Menu({ closeDrawer }: IMenuProps) {
         <NavLink
           leftSection={<TagIcon size={24} />}
           rightSection={
-            <CaretDownIcon
-              size={24}
-              className={`transition-transform duration-200 ${expandedTags ? "rotate-180" : "rotate-0"}`}
-            />
+            <>
+              {expandedTags && (
+                <Button
+                  size="compact-xs"
+                  variant={editModeTags ? "white" : "filled"}
+                  onClick={onClickEditMode}
+                >
+                  Edit
+                </Button>
+              )}
+              <CaretDownIcon
+                size={24}
+                className={`transition-transform duration-200 ${expandedTags ? "rotate-180" : "rotate-0"}`}
+              />
+            </>
           }
           label="Tags"
           active={false}
           onClick={toggleTags}
           variant="filled"
-          component="button"
+          component="div"
           className="p-4!"
           classNames={{
             label: "text-base!",
+            section: "gap-4"
           }}
         />
         <Collapse expanded={expandedTags}>
           {tags.map((t) => (
-            <NavLink
+            <TagItem
               key={t.id}
-              leftSection={<div className="w-6" />}
-              label={t.name}
-              active={view.mode === "tag" && view.tagId === t.id}
-              onClick={() => onClickNavItem("tag", t.id)}
-              variant="filled"
-              component="button"
-              className="p-4!"
-              classNames={{
-                label: "text-base!"
-              }}
+              tag={t}
+              editModeTags={editModeTags}
+              closeDrawer={closeDrawer}
             />
           ))}
         </Collapse>
-      </div>
+      </ScrollArea>
 
       {/* USER ACCOUNT */}
       <footer
