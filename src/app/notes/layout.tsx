@@ -23,13 +23,17 @@ export default function NotesLayout({ children }: PropsWithChildren) {
           size={300}
           overlayProps={{ blur: 2 }}
           classNames={{
+            content: "overflow-hidden!",
             header: "h-15 border-b border-b-(--mantine-color-default-border)",
             body: "p-0! flex flex-col h-[calc(100%-60px)]",
           }}
           keepMounted
           keepMountedMode="display-none"
         >
-          <Menu closeDrawer={closeDrawer} />
+          <Menu
+            openedDrawer={openedDrawer}
+            closeDrawer={closeDrawer}
+          />
         </Drawer>
 
         <AppShell
