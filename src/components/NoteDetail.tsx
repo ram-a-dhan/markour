@@ -181,7 +181,9 @@ export default function NoteDetail({
 
       {/* NOTE CONTENT */}
       <AppShell.Main>
-        {children}
+        <div className="h-full flex flex-col">
+          {children}
+        </div>
       </AppShell.Main>
     </>
   );

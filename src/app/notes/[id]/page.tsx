@@ -19,7 +19,7 @@ export default function NotesById() {
   };
 
   if (!loaded) return (
-    <div className="flex justify-center gap-4">
+    <div className="flex justify-center gap-4 p-4">
       <CircleNotchIcon size={34}>
         <animateTransform
           attributeName="transform"
@@ -35,7 +35,7 @@ export default function NotesById() {
   );
 
   if (!note) return (
-    <div className="flex justify-center gap-4">
+    <div className="flex justify-center gap-4 p-4">
       <span className="italic text-(--mantine-color-dimmed)">
         Note not found.
       </span>

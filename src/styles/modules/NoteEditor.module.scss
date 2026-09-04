@@ -43,6 +43,10 @@
     &:first-child {
       margin-top: 0;
     }
+
+    &:last-child {
+      margin-bottom: 0;
+    }
   }
 
   ul,
@@ -110,5 +114,11 @@
     float: left;
     height: 0;
     pointer-events: none;
+  }
+
+  :global(.ProseMirror) {
+    > :last-child {
+      padding-bottom: 1rem;
+    }
   }
 }

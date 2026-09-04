@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { ActionIcon, AppShell, ScrollArea, Tooltip } from "@mantine/core";
+import { ActionIcon, AppShell, Tooltip } from "@mantine/core";
 import { modals } from "@mantine/modals";
 import { notifications } from "@mantine/notifications";
 import { GearFineIcon, NotePencilIcon, TrashIcon } from "@phosphor-icons/react";
@@ -145,9 +145,8 @@ export default function NoteList({
 
       {/* NOTE LIST */}
       <AppShell.Section
-        className="overscroll-contain"
+        className="overscroll-contain overflow-y-auto"
         grow
-        component={ScrollArea}
       >
         {notes.map((item) => {
           const [title, ...content] = item.content.trimStart().split("\n");

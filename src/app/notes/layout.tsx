@@ -49,8 +49,7 @@ export default function NotesLayout({ children }: PropsWithChildren) {
             },
           }}
           classNames={{
-            root: "h-full",
-            main: "h-full flex flex-col pb-0!",
+            main: "h-dvh overflow-hidden ps-(--app-shell-navbar-offset,0rem)! pe-(--app-shell-aside-offset,0rem)! pt-(--app-shell-header-offset,0rem)! pb-0!",
           }}
         >
           <NoteList
