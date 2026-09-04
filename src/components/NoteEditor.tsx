@@ -35,7 +35,7 @@ export function NoteEditor({ noteId, content, onChange, disabled}: NoteEditorPro
     immediatelyRender: false,
     editorProps: {
       attributes: {
-        class: "focus:outline-none h-full flex-1",
+        class: "focus:outline-none p-4",
       },
     },
     onUpdate: ({ editor }) => {
@@ -55,7 +55,7 @@ export function NoteEditor({ noteId, content, onChange, disabled}: NoteEditorPro
   }, [editor, noteId, content]);
 
   return (
-    <div className="prose dark:prose-invert w-full max-w-full h-full flex-1 flex flex-col [&>div]:h-full [&>div]:flex-1 [&>div]:flex [&>div]:flex-col">
+    <div className="prose dark:prose-invert w-full max-w-full flex-1 overflow-y-auto [&>div]:h-full [&>div>div]:h-full">
       <EditorContent
         editor={editor}
         style={styles}

@@ -65,7 +65,7 @@ export function NoteTagsInput({ noteId, tagIds, disabled }: INoteTagsInputProps)
     <TagsInput
       variant="unstyled"
       leftSection={<TagIcon size={24} />}
-      placeholder={disabled ? "" : "Add Tags..."}
+      placeholder={!disabled ? "Add Tags..." : !tagIds.length ? "No Tags" : ""}
       value={currentNames}
       data={tags.map((t) => t.name)}
       onChange={onChange}
@@ -74,7 +74,7 @@ export function NoteTagsInput({ noteId, tagIds, disabled }: INoteTagsInputProps)
       onKeyDown={onKeyDown}
       splitChars={[]}
       acceptValueOnBlur={false}
-      className="sticky bottom-0 bg-(--mantine-color-body) py-4 border-t border-t-(--mantine-color-default-border)"
+      className="sticky bottom-0 bg-(--mantine-color-body) p-4 border-t border-t-(--app-shell-border-color)"
       classNames={{
         pill: "[:where([data-mantine-color-scheme='dark'])_&]:bg-(--mantine-color-gray-8)!"
       }}

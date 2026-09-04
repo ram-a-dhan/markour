@@ -6,7 +6,6 @@ import {
   Button,
   Collapse,
   NavLink,
-  ScrollArea,
   Tooltip,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
@@ -56,7 +55,7 @@ export default function Menu({ openedDrawer, closeDrawer }: IMenuProps) {
   return (
     <>
       {/* MENU LIST */}
-      <ScrollArea className="h-full">
+      <div className="h-full overflow-y-auto">
         <NavLink
           leftSection={<NotepadIcon size={24} />}
           label="Notes"
@@ -121,7 +120,7 @@ export default function Menu({ openedDrawer, closeDrawer }: IMenuProps) {
             />
           ))}
         </Collapse>
-      </ScrollArea>
+      </div>
 
       {/* USER ACCOUNT */}
       <footer
