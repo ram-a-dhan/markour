@@ -7,6 +7,7 @@ import { GearFineIcon, NotePencilIcon, TrashIcon } from "@phosphor-icons/react";
 import { useNotes } from "@/src/context/NotesContext";
 import { useTags } from "@/src/context/TagsContext";
 import { NOTE_DETAIL_PATH, NOTE_LIST_PATH } from "@/src/constants/url";
+import NoteItem from "@/src/components/NoteItem";
 
 interface INoteListProps {
   openDrawer: () => void;
@@ -148,23 +149,13 @@ export default function NoteList({
         className="overscroll-contain overflow-y-auto"
         grow
       >
-        {notes.map((item) => {
-          const [title, ...content] = item.content.trimStart().split("\n");
-          return (
-            <div
-              key={item.id}
-              onClick={() => onClickOpen(item.id)}
-              className="p-4 cursor-pointer hover:bg-(--mantine-color-default-hover) active:bg-(--mantine-color-default-border) select-none"
-            >
-              <p className="mb-1 truncate">
-                {title.replace(/(&nbsp;|#)/g, "").trim() || "Untitled"}
-              </p>
-              <p className="text-xs text-(--mantine-color-dimmed) truncate">
-                {content.join(" ").trim()}
-              </p>
-            </div>
-          );
-        })}
+        {notes.map((n) => (
+          <NoteItem
+            key={n.id}
+            note={n}
+            onClickOpen={onClickOpen}
+          />
+        ))}
       </AppShell.Section>
     </AppShell.Navbar>
   );

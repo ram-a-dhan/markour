@@ -9,6 +9,17 @@ import { TaskList, TaskItem } from "@tiptap/extension-list";
 import { Placeholder } from "@tiptap/extensions/placeholder";
 import styles from "@/src/styles/modules/NoteEditor.module.scss";
 
+const EDITOR_EXTENSIONS = [
+  StarterKit,
+  Markdown,
+  TableKit,
+  TaskList,
+  TaskItem,
+  Placeholder.configure({
+    placeholder: "Start Writing...",
+  }),
+];
+
 type NoteEditorProps = {
   noteId: string;
   content: string;
@@ -20,16 +31,7 @@ export function NoteEditor({ noteId, content, onChange, disabled}: NoteEditorPro
   const loadedNoteId = useRef<string | null>(null);
 
   const editor = useEditor({
-    extensions: [
-      StarterKit,
-      Markdown,
-      TableKit,
-      TaskList,
-      TaskItem,
-      Placeholder.configure({
-        placeholder: "Start Writing...",
-      }),
-    ],
+    extensions: EDITOR_EXTENSIONS,
     content,
     contentType: "markdown",
     immediatelyRender: false,
@@ -52,7 +54,7 @@ export function NoteEditor({ noteId, content, onChange, disabled}: NoteEditorPro
       editor.commands.setContent(content, { contentType: "markdown" });
       loadedNoteId.current = noteId;
     }
-  }, [editor, noteId, content]);
+  }, [editor, noteId]);
 
   return (
     <div className="prose dark:prose-invert w-full max-w-full flex-1 overflow-y-auto [&>div]:h-full [&>div>div]:h-full">

@@ -67,7 +67,7 @@ export function NoteTagsInput({ noteId, tagIds, disabled }: INoteTagsInputProps)
       leftSection={<TagIcon size={24} />}
       placeholder={!disabled ? "Add Tags..." : !tagIds.length ? "No Tags" : ""}
       value={currentNames}
-      data={tags.map((t) => t.name)}
+      data={tags.map((t) => t.name).sort((a, b) => a.localeCompare(b))}
       onChange={onChange}
       searchValue={searchValue}
       onSearchChange={setSearchValue}
