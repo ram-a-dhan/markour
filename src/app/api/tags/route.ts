@@ -4,6 +4,7 @@ import { db } from "@/src/db";
 import { tags as tagSchema } from "@/src/db/schema";
 import { requireAuth } from "@/src/lib/requireAuth";
 import { serializeTag } from "@/src/utils/serialize";
+import { HTTP_STATUS } from "@/src/constants/misc";
 
 export async function GET(req: NextRequest) {
   const auth = requireAuth(req);
@@ -14,7 +15,9 @@ export async function GET(req: NextRequest) {
     .from(tagSchema)
     .where(eq(tagSchema.userId, auth.userId));
 
-  return NextResponse.json({ tags: tags.map(serializeTag) });
+  return NextResponse.json({
+    data: tags.map(serializeTag),
+  });
 }
 
 export async function POST(req: NextRequest) {
@@ -25,8 +28,8 @@ export async function POST(req: NextRequest) {
 
   if (!name?.trim()) {
     return NextResponse.json(
-      { error: "Tag name is required." },
-      { status: 400 },
+      { message: "Tag name is required." },
+      { status: HTTP_STATUS.BAD_REQUEST },
     );
   }
 
@@ -40,14 +43,14 @@ export async function POST(req: NextRequest) {
       .returning();
 
     return NextResponse.json(
-      { tag: serializeTag(created) },
-      { status: 201 },
+      { data: serializeTag(created) },
+      { status: HTTP_STATUS.CREATED },
     );
   } catch {
     // unique constraint violation — same name already exists for this user
     return NextResponse.json(
-      { error: "Tag with this name already exists." },
-      { status: 409 },
+      { message: "Tag with this name already exists." },
+      { status: HTTP_STATUS.CONFLICT },
     );
   }
 }
