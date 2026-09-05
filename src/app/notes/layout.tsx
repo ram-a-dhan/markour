@@ -24,7 +24,7 @@ export default function NotesLayout({ children }: PropsWithChildren) {
           overlayProps={{ blur: 2 }}
           classNames={{
             content: "overflow-hidden!",
-            header: "h-15 border-b border-b-(--mantine-color-default-border)",
+            header: "h-15 p-4! border-b border-b-(--mantine-color-default-border)",
             body: "p-0! flex flex-col h-[calc(100%-60px)]",
           }}
           keepMounted

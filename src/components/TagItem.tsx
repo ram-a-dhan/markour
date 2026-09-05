@@ -67,7 +67,7 @@ export default function TagItem({ tag, editModeTags, closeDrawer }: ITagItemProp
       label={tag.name}
       active={view.mode === "tag" && view.tagId === tag.id}
       onClick={() => onClickTagItem("tag", tag.id)}
-      variant="filled"
+      variant="light"
       component="div"
       className="p-4!"
       classNames={{

@@ -61,8 +61,8 @@ export default function Menu({ openedDrawer, closeDrawer }: IMenuProps) {
           label="Notes"
           active={view.mode === "notes"}
           onClick={() => onClickNavItem("notes")}
-          variant="filled"
-          component="button"
+          variant="light"
+          component="div"
           className="p-4!"
           classNames={{
             label: "text-base!",
@@ -73,8 +73,8 @@ export default function Menu({ openedDrawer, closeDrawer }: IMenuProps) {
           label="Trash"
           active={view.mode === "trash"}
           onClick={() => onClickNavItem("trash")}
-          variant="filled"
-          component="button"
+          variant="light"
+          component="div"
           className="p-4!"
           classNames={{
             label: "text-base!",
@@ -87,10 +87,10 @@ export default function Menu({ openedDrawer, closeDrawer }: IMenuProps) {
               {expandedTags && (
                 <Button
                   size="compact-xs"
-                  variant={editModeTags ? "white" : "filled"}
+                  variant="filled"
                   onClick={onClickEditMode}
                 >
-                  Edit
+                  {editModeTags ? "Stop Edit" : "Edit"}
                 </Button>
               )}
               <CaretDownIcon
