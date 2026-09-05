@@ -3,6 +3,7 @@ import { and, eq } from "drizzle-orm";
 import { db } from "@/src/db";
 import { tags as tagSchema, noteTags as noteTagSchema } from "@/src/db/schema";
 import { requireAuth } from "@/src/lib/requireAuth";
+import { HTTP_STATUS } from "@/src/constants/misc";
 
 export async function DELETE(
   req: NextRequest,
@@ -24,8 +25,8 @@ export async function DELETE(
 
   if (!found) {
     return NextResponse.json(
-      { error: "Tag not found." },
-      { status: 404 },
+      { message: "Tag not found." },
+      { status: HTTP_STATUS.NOT_FOUND },
     );
   }
 
@@ -37,8 +38,8 @@ export async function DELETE(
 
   if (used) {
     return NextResponse.json(
-      { error: "Tag is still in use." },
-      { status: 409 },
+      { message: "Tag is still in use." },
+      { status: HTTP_STATUS.CONFLICT },
     );
   }
 
@@ -46,5 +47,7 @@ export async function DELETE(
     .delete(tagSchema)
     .where(eq(tagSchema.id, id));
 
-  return NextResponse.json({ success: true });
+  return NextResponse.json({
+    data: { success: true },
+  });
 }

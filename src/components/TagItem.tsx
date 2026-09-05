@@ -34,8 +34,8 @@ export default function TagItem({ tag, editModeTags, closeDrawer }: ITagItemProp
     } catch (error) {
       notifications.show({
         color: "red",
-        title: "Error",
-        message: (error as Error).message,
+        title: "Failed Deleting Tag",
+        message: (error as IFetchErr).message,
       });
     } finally {
       if (tagId === tag.id) setView({ mode: "notes", tagId: undefined });

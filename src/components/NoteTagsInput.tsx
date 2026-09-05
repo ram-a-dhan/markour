@@ -1,10 +1,12 @@
 "use client";
 
+import { type KeyboardEvent, useState } from "react";
 import { TagsInput } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
 import { TagIcon } from "@phosphor-icons/react";
 import { useTags } from "@/src/context/TagsContext";
 import { useNotes } from "@/src/context/NotesContext";
-import { type KeyboardEvent, useState } from "react";
+import { HTTP_STATUS } from "@/src/constants/misc";
 
 interface INoteTagsInputProps {
   noteId: string;
@@ -38,16 +40,24 @@ export function NoteTagsInput({ noteId, tagIds, disabled }: INoteTagsInputProps)
         continue;
       }
 
-      // Not an existing tag — create it.
-      const created = await createTag(trimmed);
-      if (created) {
+      try {
+        const created = await createTag(trimmed);
         resolvedIds.push(created.id);
-      } else {
-        // Creation failed (likely a race condition — someone/something else created
-        // the same name a moment ago). Refresh and try to resolve again.
-        await refresh();
-        const retryId = tags.find((t) => t.name === trimmed)?.id;
-        if (retryId) resolvedIds.push(retryId);
+      } catch (error) {
+        const err = error as IFetchErr;
+        if (err.status === HTTP_STATUS.CONFLICT) {
+          // Race condition — other devices created this name a moment ago.
+          // Refresh and resolve it by name instead of failing this tag.
+          await refresh();
+          const retryId = tags.find((t) => t.name === trimmed)?.id;
+          if (retryId) resolvedIds.push(retryId);
+        } else {
+          notifications.show({
+            color: "red",
+            title: "Failed Creating Tag",
+            message: err.message,
+          })
+        }
       }
     }
 
