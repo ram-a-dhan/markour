@@ -4,18 +4,25 @@ import { db } from "@/src/db";
 import { users as userSchema } from "@/src/db/schema";
 import { verifyJwt } from "@/src/lib/jwt";
 import { serializeUser } from "@/src/utils/serialize";
+import { HTTP_STATUS } from "@/src/constants/misc";
 
 export async function GET(req:NextRequest) {
   const token = req.cookies.get("auth_token")?.value;
 
   if (!token) {
-    return NextResponse.json({ error: "Not authenticated." }, { status: 401 });
+    return NextResponse.json(
+      { message: "Not authenticated." },
+      { status: HTTP_STATUS.NOT_AUTHENTICATED },
+    );
   }
 
   const payload = verifyJwt(token);
 
   if (!payload) {
-    return NextResponse.json({ error: "Token invalid or expired." }, { status: 401 });
+    return NextResponse.json(
+      { message: "Token invalid or expired." },
+      { status: HTTP_STATUS.NOT_AUTHENTICATED },
+    );
   }
 
   const [user] = await db
@@ -24,8 +31,13 @@ export async function GET(req:NextRequest) {
     .where(eq(userSchema.id, payload.userId));
 
   if (!user) {
-    return NextResponse.json({ error: "User not found." }, { status: 404 });
+    return NextResponse.json(
+      { message: "User not found." },
+      { status: HTTP_STATUS.NOT_FOUND },
+    );
   }
 
-  return NextResponse.json(serializeUser(user));
+  return NextResponse.json({
+    data: serializeUser(user),
+  });
 }
