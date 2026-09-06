@@ -6,8 +6,8 @@ import { notifications } from "@mantine/notifications";
 import { GearFineIcon, NotePencilIcon, TrashIcon } from "@phosphor-icons/react";
 import { useNotes } from "@/src/context/NotesContext";
 import { useTags } from "@/src/context/TagsContext";
-import { NOTE_DETAIL_PATH, NOTE_LIST_PATH } from "@/src/constants/url";
 import NoteItem from "@/src/components/NoteItem";
+import { NOTE_DETAIL_PATH, NOTE_LIST_PATH } from "@/src/constants/url";
 
 interface INoteListProps {
   openDrawer: () => void;
@@ -81,8 +81,15 @@ export default function NoteList({
           await onConfirmPurge();
           modals.close(modalId);
         } catch (error) {
-          modals.updateModal({ modalId, confirmProps: { color: "red", loading: false } });
-          notifications.show({ title: "Error", message: (error as Error).message , color: "red" });
+          modals.updateModal({
+            modalId,
+            confirmProps: { color: "red", loading: false },
+          });
+          notifications.show({
+            color: "red",
+            title: "Failed Deleting Notes",
+            message: (error as IFetchErr).message ,
+          });
         }
       },
     });

@@ -35,7 +35,9 @@ export async function GET(req: NextRequest) {
   }
 
   return NextResponse.json({
-    notes: rows.map((r) => serializeNote(r, tagsByNote.get(r.id) ?? [])),
-    serverTime: Date.now(),
+    data: rows.map((r) => serializeNote(r, tagsByNote.get(r.id) ?? [])),
+    meta: {
+      serverTime: Date.now(),
+    },
   });
 }

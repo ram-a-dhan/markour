@@ -4,6 +4,7 @@ import { notes as noteSchema, noteTags as noteTagSchema, tags as tagSchema } fro
 import { and, eq, inArray } from "drizzle-orm";
 import { serializeNote } from "@/src/utils/serialize";
 import { requireAuth } from "@/src/lib/requireAuth";
+import { HTTP_STATUS } from "@/src/constants/misc";
 
 interface INotePushPayload extends INoteFE {
   clientId?: string;
@@ -28,8 +29,8 @@ export async function POST(req: NextRequest) {
 
   if (!id || typeof updatedAt !== "number") {
     return NextResponse.json(
-      { error: "id and updatedAt are required." },
-      { status: 400 },
+      { message: "id and updatedAt are required." },
+      { status: HTTP_STATUS.BAD_REQUEST },
     );
   }
 
@@ -45,8 +46,8 @@ export async function POST(req: NextRequest) {
 
   if (!current) {
     return NextResponse.json(
-      { error: "Note not found." },
-      { status: 404 },
+      { message: "Note not found." },
+      { status: HTTP_STATUS.NOT_FOUND },
     );
   }
 
@@ -58,11 +59,10 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(
       {
-        accepted: false,
-        reason: "conflict",
-        serverNote: serializeNote(current, existingTags ? [existingTags.tagId] : []),
+        message: "Client-side note is outdated.",
+        details: { data: serializeNote(current, existingTags ? [existingTags.tagId] : []) },
       },
-      { status: 409 }
+      { status: HTTP_STATUS.CONFLICT }
     );
   }
 
@@ -120,9 +120,10 @@ export async function POST(req: NextRequest) {
     .where(eq(noteTagSchema.noteId, id));
 
   return NextResponse.json({
-    accepted: true,
-    serverNote: serializeNote(updated, finalTagLinks.map((l) => l.tagId)),
-    receivedAt: Date.now(),
-    fromClient: clientId ?? null,
+    data: serializeNote(updated, finalTagLinks.map((l) => l.tagId)),
+    meta: {
+      receivedAt: Date.now(),
+      fromClient: clientId ?? null,
+    },
   });
 }

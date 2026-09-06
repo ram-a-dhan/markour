@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
+import { useSession } from "@/src/context/SessionContext";
+import { fetcher } from "@/src/lib/fetcher";
 import {
   ILocalNote,
   getAllLocalNotes,
@@ -14,8 +16,8 @@ import {
   pullRemoteChanges,
   fullResync,
 } from "@/src/lib/syncManager";
-import { useSession } from "@/src/context/SessionContext";
 import { NOTES_PURGE_API_PATH } from "@/src/constants/url";
+import { REQUEST_METHOD } from "@/src/constants/misc";
 
 const DEBOUNCE_MS = 1500;
 const POLL_MS = 3000;
@@ -147,26 +149,20 @@ export function useNotes() {
     if (!userId) throw new Error("Cannot purge notes without a logged-in user.");
     if (ids.length === 0) throw new Error("Cannot purge notes without ids.");
 
-    const res = await fetch(NOTES_PURGE_API_PATH, {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ids }),
-    });
-
-    if (!res.ok) {
-      const error = await res.json();
-      throw new Error(error?.error || error?.message || error);
+    try {
+      const res = await fetcher<string[]>(NOTES_PURGE_API_PATH, {
+        method: REQUEST_METHOD.POST,
+        data: { ids },
+      });
+      await deleteLocalNotes(res.data);
+      // if offline/failed: local copies stay put, still tombstoned,
+      // still visible in trash — user can retry purge later. No local-only
+      // hard delete without server confirmation, to avoid a note vanishing
+      // locally while still existing server-side (would resurrect on next pull).
+      await refresh();
+    } catch (error) {
+      throw error;
     }
-
-    const data = (await res.json()) as { purgedIds: string[] };
-    await deleteLocalNotes(data.purgedIds);
-    // if offline/failed: local copies stay put, still tombstoned,
-    // still visible in trash — user can retry purge later. No local-only
-    // hard delete without server confirmation, to avoid a note vanishing
-    // locally while still existing server-side (would resurrect on next pull).
-
-    await refresh();
   }, [userId, refresh]);
 
   const updateNoteTags = useCallback(async (id: string, tagIds: string[]) => {

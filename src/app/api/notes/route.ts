@@ -4,6 +4,7 @@ import { notes as noteSchema, noteTags as noteTagSchema } from "@/src/db/schema"
 import { eq, inArray } from "drizzle-orm";
 import { serializeNote } from "@/src/utils/serialize";
 import { requireAuth } from "@/src/lib/requireAuth";
+import { HTTP_STATUS } from "@/src/constants/misc";
 
 export async function GET(req: NextRequest) {
   const auth = requireAuth(req);
@@ -29,8 +30,10 @@ export async function GET(req: NextRequest) {
   }
 
   return NextResponse.json({
-    notes: rows.map((r) => serializeNote(r, tagsByNote.get(r.id) ?? [])),
-    serverTime: Date.now(),
+    data: rows.map((r) => serializeNote(r, tagsByNote.get(r.id) ?? [])),
+    meta: {
+      serverTime: Date.now(),
+    },
   });
 }
 
@@ -49,8 +52,8 @@ export async function POST(req: NextRequest) {
 
   if (!id || typeof createdAt !== "number" || typeof updatedAt !== "number") {
     return NextResponse.json(
-      { error: "id, createdAt, updatedAt are required" },
-      { status: 400 },
+      { message: "id, createdAt, updatedAt are required." },
+      { status: HTTP_STATUS.BAD_REQUEST },
     );
   }
 
@@ -63,8 +66,8 @@ export async function POST(req: NextRequest) {
 
   if (existing) {
     return NextResponse.json(
-      { error: "note already exists, use push to update" },
-      { status: 409 },
+      { message: "Note already exists, use push to update." },
+      { status: HTTP_STATUS.CONFLICT },
     );
   }
 
@@ -81,7 +84,7 @@ export async function POST(req: NextRequest) {
     .returning();
 
   return NextResponse.json(
-    { note: serializeNote(created) },
-    { status: 201 },
+    { data: serializeNote(created) },
+    { status: HTTP_STATUS.CREATED },
   );
 }

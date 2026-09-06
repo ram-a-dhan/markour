@@ -3,9 +3,9 @@ declare interface IFetchRes<T, M = never> {
   meta: M;
 }
 
-declare interface IFetchErr {
+declare interface IFetchErr<D = unknown> {
   status: number;
   message: string;
   code?: string;
-  details?: unknown;
+  details?: D;
 }
