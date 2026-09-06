@@ -3,6 +3,7 @@ import { db } from "@/src/db";
 import { notes as noteSchema } from "@/src/db/schema";
 import { and, eq, inArray, isNotNull } from "drizzle-orm";
 import { requireAuth } from "@/src/lib/requireAuth";
+import { HTTP_STATUS } from "@/src/constants/misc";
 
 export async function POST(req: NextRequest) {
   const auth = requireAuth(req);
@@ -11,8 +12,8 @@ export async function POST(req: NextRequest) {
   const { ids } = (await req.json()) as { ids: string[] };
   if (!Array.isArray(ids) || ids.length === 0) {
     return NextResponse.json(
-      { error: "Array of ids is required." },
-      { status: 400 });
+      { message: "Array of ids is required." },
+      { status: HTTP_STATUS.BAD_REQUEST });
   }
 
   // Scoped by userId AND requires deletedAt already set — this endpoint
@@ -29,5 +30,7 @@ export async function POST(req: NextRequest) {
     )
     .returning({ id: noteSchema.id });
 
-  return NextResponse.json({ purgedIds: deleted.map((r) => r.id) });
+  return NextResponse.json({
+    data: deleted.map((r) => r.id),
+  });
 }

@@ -1,6 +1,7 @@
 import { PropsWithChildren } from "react";
 import { ActionIcon, AppShell, Burger, Menu, Tooltip } from "@mantine/core";
 import { modals } from "@mantine/modals";
+import { notifications } from "@mantine/notifications";
 import {
   ArrowUUpLeftIcon,
   DotsThreeOutlineVerticalIcon,
@@ -10,7 +11,6 @@ import {
 import { useParams, useRouter } from "next/navigation";
 import { useNotes } from "@/src/context/NotesContext";
 import { NOTE_LIST_PATH } from "@/src/constants/url";
-import { notifications } from "@mantine/notifications";
 
 interface INoteDetailProps extends PropsWithChildren {
   openedNavbarDesktop: boolean;
@@ -79,12 +79,22 @@ export default function NoteDetail({
       closeOnConfirm: false,
       onConfirm: async () => {
         try {
-          modals.updateModal({ modalId, confirmProps: { color: "red", loading: true } });
+          modals.updateModal({
+            modalId,
+            confirmProps: { color: "red", loading: true },
+          });
           await onConfirmPurge(noteId);
           modals.close(modalId);
         } catch (error) {
-          modals.updateModal({ modalId, confirmProps: { color: "red", loading: false } });
-          notifications.show({ title: "Error", message: (error as Error).message , color: "red" });
+          modals.updateModal({
+            modalId,
+            confirmProps: { color: "red", loading: false },
+          });
+          notifications.show({
+            color: "red",
+            title: "Failed Deleting Note",
+            message: (error as IFetchErr).message ,
+          });
         }
       },
     });
