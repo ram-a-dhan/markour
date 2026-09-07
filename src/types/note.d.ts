@@ -3,6 +3,7 @@ declare interface INoteBE {
   userId: string;
   title: string;
   content: string;
+  pinned: boolean;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;
@@ -14,6 +15,7 @@ declare interface INoteFE {
   userId: string;
   title: string;
   content: string;
+  pinned: boolean;
   createdAt: number;
   updatedAt: number;
   deletedAt: number | null;

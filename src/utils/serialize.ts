@@ -19,6 +19,7 @@ export const serializeNote = (row: INoteBE, tagIds: string[] = []): INoteFE => {
     userId: row.userId,
     title: row.title,
     content: row.content,
+    pinned: row.pinned,
     createdAt: row.createdAt.getTime(),
     updatedAt: row.updatedAt.getTime(),
     deletedAt: row.deletedAt ? row.deletedAt.getTime() : null,

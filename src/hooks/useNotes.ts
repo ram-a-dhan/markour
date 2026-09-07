@@ -81,6 +81,7 @@ export function useNotes() {
       userId,
       title: "",
       content: "",
+      pinned: false,
       createdAt: now,
       updatedAt: now,
       deletedAt: null,
@@ -113,6 +114,21 @@ export function useNotes() {
       await pushDirtyNotes(userId);
       await refresh();
     }, DEBOUNCE_MS);
+  }, [userId, refresh]);
+
+  const togglePinnedNote = useCallback(async (id: string) => {
+    if (!userId) throw new Error("Cannot pin/unpin a note without a logged-in user.");
+    const current = await getLocalNote(id);
+    if (!current) return;
+    await putLocalNote({
+      ...current,
+      pinned: !(current.pinned ?? false),
+      updatedAt: Date.now(),
+      dirty: true,
+    });
+    await refresh();
+    await pushDirtyNotes(userId);
+    await refresh();
   }, [userId, refresh]);
 
   const deleteNote = useCallback(async (id: string) => {
@@ -185,6 +201,7 @@ export function useNotes() {
     loaded,
     createNote,
     updateNote,
+    togglePinnedNote,
     deleteNote,
     restoreNote,
     purgeNotes,
