@@ -1,6 +1,7 @@
 import { NavLink } from "@mantine/core";
 import { useParams } from "next/navigation";
 import { type ILocalNote } from "@/src/lib/localdb";
+import { PushPinIcon } from "@phosphor-icons/react";
 
 interface INoteItemProps {
   note: ILocalNote;
@@ -25,6 +26,7 @@ export default function NoteItem({ note, onClickOpen }: INoteItemProps) {
         label: "text-base! truncate",
         description: "text-xs! truncate",
       }}
+      rightSection={note.pinned && <PushPinIcon />}
     />
   );
 }

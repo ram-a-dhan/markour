@@ -21,6 +21,7 @@ export async function POST(req: NextRequest) {
     id,
     title,
     content,
+    pinned,
     updatedAt,
     deletedAt,
     tagIds,
@@ -73,6 +74,7 @@ export async function POST(req: NextRequest) {
       content: content ?? current.content,
       updatedAt: new Date(updatedAt),
       deletedAt: deletedAt != null ? new Date(deletedAt) : null,
+      pinned: pinned ?? current.pinned,
       version: current.version + 1,
     })
     .where(

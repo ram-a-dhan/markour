@@ -5,6 +5,8 @@ import { notifications } from "@mantine/notifications";
 import {
   ArrowUUpLeftIcon,
   DotsThreeOutlineVerticalIcon,
+  PushPinIcon,
+  PushPinSimpleSlashIcon,
   SidebarSimpleIcon,
   TrashIcon,
 } from "@phosphor-icons/react";
@@ -29,7 +31,7 @@ export default function NoteDetail({
   const params = useParams<{ id: string }>();
   const router = useRouter();
 
-  const { notes, loaded, deleteNote, restoreNote, purgeNotes } = useNotes();
+  const { notes, loaded, togglePinnedNote, deleteNote, restoreNote, purgeNotes } = useNotes();
 
   const note = notes.find((n) => n.id === params.id);
 
@@ -146,6 +148,21 @@ export default function NoteDetail({
                     </ActionIcon>
                   </Tooltip>
                 )}
+                {!note.deletedAt && (
+                  <Tooltip label="Toggle Pin">
+                    <ActionIcon
+                      variant="transparent"
+                      color="dark"
+                      onClick={() => togglePinnedNote(note.id)}
+                    >
+                      {!!note.pinned ? (
+                        <PushPinSimpleSlashIcon size={26} />
+                      ) : (
+                        <PushPinIcon size={26} />
+                      )}
+                    </ActionIcon>
+                  </Tooltip>
+                )}
                 {/* NOTE OPTIONS */}
                 <Menu shadow="md">
                   <Menu.Target>
@@ -154,7 +171,7 @@ export default function NoteDetail({
                         variant="transparent"
                         color="dark"
                       >
-                        <DotsThreeOutlineVerticalIcon />
+                        <DotsThreeOutlineVerticalIcon size={26} />
                       </ActionIcon>
                     </Tooltip>
                   </Menu.Target>

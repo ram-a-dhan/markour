@@ -13,6 +13,7 @@ export const notes = sqliteTable("notes", {
   userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   title: text("title").notNull().default(""),
   content: text("content").notNull().default(""),
+  pinned: integer("pinned", { mode: "boolean" }).notNull().default(false),
   createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull().$defaultFn(() => new Date()),
   updatedAt: integer("updated_at", { mode: "timestamp_ms" }).notNull().$defaultFn(() => new Date()),
   deletedAt: integer("deleted_at", { mode: "timestamp_ms" }),

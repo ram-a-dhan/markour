@@ -32,10 +32,19 @@ function getDB() {
   return dbPromise;
 }
 
+function defaultSorter(a: ILocalNote, b: ILocalNote): number {
+  const aPinned = a.pinned ?? false;
+  const bPinned = b.pinned ?? false;
+  if (aPinned !== bPinned) {
+    return aPinned ? -1 : 1;
+  }
+  return b.updatedAt - a.updatedAt;
+}
+
 export async function getAllLocalNotes(
   userId: string,
   filter: (note: ILocalNote) => boolean = () => true,
-  sorter: (a: ILocalNote, b: ILocalNote) => number = (a, b) => b.updatedAt - a.updatedAt,
+  sorter: (a: ILocalNote, b: ILocalNote) => number = defaultSorter,
 ): Promise<ILocalNote[]> {
   const db = await getDB();
   const all = await db.getAll("notes");

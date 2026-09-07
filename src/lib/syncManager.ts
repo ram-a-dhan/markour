@@ -32,6 +32,7 @@ export async function pushDirtyNotes(userId: string): Promise<void> {
               id: note.id,
               title: note.title,
               content: note.content,
+              pinned: note.pinned,
               createdAt: note.createdAt,
               updatedAt: note.updatedAt,
               // no tagIds here — new notes always start untagged, per your
@@ -61,6 +62,7 @@ export async function pushDirtyNotes(userId: string): Promise<void> {
                   id: note.id,
                   title: note.title,
                   content: note.content,
+                  pinned: note.pinned,
                   updatedAt: note.updatedAt,
                   deletedAt: note.deletedAt,
                   tagIds: note.tagIds,
@@ -89,6 +91,7 @@ export async function pushDirtyNotes(userId: string): Promise<void> {
               id: note.id,
               title: note.title,
               content: note.content,
+              pinned: note.pinned,
               updatedAt: note.updatedAt,
               deletedAt: note.deletedAt,
               tagIds: note.tagIds,
