@@ -1,9 +1,15 @@
-import { useMemo } from "react";
+import { type ChangeEvent, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { ActionIcon, AppShell, Tooltip } from "@mantine/core";
+import { ActionIcon, AppShell, TextInput, ThemeIcon, Tooltip } from "@mantine/core";
 import { modals } from "@mantine/modals";
 import { notifications } from "@mantine/notifications";
-import { GearFineIcon, NotePencilIcon, TrashIcon } from "@phosphor-icons/react";
+import {
+  GearFineIcon,
+  MagnifyingGlassIcon,
+  NotePencilIcon,
+  TrashIcon,
+  XCircleIcon,
+} from "@phosphor-icons/react";
 import { useNotes } from "@/src/context/NotesContext";
 import { useTags } from "@/src/context/TagsContext";
 import NoteItem from "@/src/components/NoteItem";
@@ -22,12 +28,27 @@ export default function NoteList({
 }: INoteListProps) {
   const router = useRouter();
 
-  const { notes, createNote, purgeNotes, view } = useNotes();
+  const {
+    notes,
+    createNote,
+    purgeNotes,
+    view,
+    searchQuery,
+    setSearchQuery,
+  } = useNotes();
   const { tags } = useTags();
 
   const selectedTag = useMemo(() => {
     return tags.find((t) => t.id === view.tagId);
   }, [tags, view.tagId]);
+
+  const onChangeSearchQuery = (event: ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(event.currentTarget.value);
+  };
+
+  const onDeleteSearchQuery = () => {
+    setSearchQuery("");
+  };
 
   const onClickCreate = async () => {
     const id = await createNote();
@@ -149,6 +170,35 @@ export default function NoteList({
         {view.mode === "tag" && (
           <div className="w-7" />
         )}
+      </AppShell.Section>
+
+      {/* NOTE SEARCHBAR */}
+      <AppShell.Section
+        px="md"
+        h={48}
+        className="grow-0 shrink-0 flex items-center border-b border-b-(--app-shell-border-color)"
+      >
+        <ThemeIcon
+          variant="transparent"
+          color="dark"
+        >
+          <MagnifyingGlassIcon size={22} />
+        </ThemeIcon>
+        <TextInput
+          size="md"
+          variant="unstyled"
+          placeholder="Search Notes..."
+          className="flex-1 px-2"
+          value={searchQuery}
+          onChange={onChangeSearchQuery}
+        />
+        <ActionIcon
+          variant="transparent"
+          color="dark"
+          onClick={onDeleteSearchQuery}
+        >
+          <XCircleIcon size={22} />
+        </ActionIcon>
       </AppShell.Section>
 
       {/* NOTE LIST */}

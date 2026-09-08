@@ -9,13 +9,13 @@ import { NoteTagsInput } from "@/src/components/NoteTagsInput";
 export default function NotesById() {
   const params = useParams<{ id: string }>();
 
-  const { notes, loaded, updateNote } = useNotes();
+  const { allNotes, loaded, updateNote } = useNotes();
 
-  const note = notes.find((n) => n.id === params.id);
+  const note = allNotes.find((n) => n.id === params.id);
 
   const onChange = (markdown: string) => {
     if (!note?.id) return;
-    updateNote(note.id, { content: markdown })
+    updateNote(note.id, { content: markdown });
   };
 
   if (!loaded) return (
