@@ -31,9 +31,16 @@ export default function NoteDetail({
   const params = useParams<{ id: string }>();
   const router = useRouter();
 
-  const { notes, loaded, togglePinnedNote, deleteNote, restoreNote, purgeNotes } = useNotes();
+  const {
+    allNotes,
+    loaded,
+    togglePinnedNote,
+    deleteNote,
+    restoreNote,
+    purgeNotes,
+  } = useNotes();
 
-  const note = notes.find((n) => n.id === params.id);
+  const note = allNotes.find((n) => n.id === params.id);
 
   const onClickRestore = async (noteId: string) => {
     await restoreNote(noteId);

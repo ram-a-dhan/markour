@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
+import { useDebouncedValue } from "@mantine/hooks";
 import { useSession } from "@/src/context/SessionContext";
 import { fetcher } from "@/src/lib/fetcher";
 import {
@@ -27,9 +28,12 @@ export function useNotes() {
   const userId = user?.id ?? null;
 
   const [view, setView] = useState<IView>({ mode: "notes" });
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const [allNotes, setAllNotes] = useState<ILocalNote[]>([]);
   const [loaded, setLoaded] = useState(false);
   const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const [debouncedSearchQuery] = useDebouncedValue(searchQuery, 500);
 
   const refresh = useCallback(async () => {
     if (!userId) return;
@@ -59,16 +63,25 @@ export function useNotes() {
   }, [userId, refresh]);
 
   const notes = useMemo(() => {
+    let filtered: ILocalNote[];
     switch (view.mode) {
       case "tag":
-        return allNotes.filter((n) => n.tagIds.includes(view.tagId!));
+        filtered = allNotes.filter((n) => n.tagIds.includes(view.tagId!));
+        break;
       case "trash":
-        return allNotes.filter((n) => !!n.deletedAt);
+        filtered = allNotes.filter((n) => !!n.deletedAt);
+        break;
       case "notes":
       default:
-        return allNotes.filter((n) => !n.deletedAt);
+        filtered = allNotes.filter((n) => !n.deletedAt);
+        break;
     }
-  }, [allNotes, view.mode, view.tagId]);
+
+    const query = debouncedSearchQuery.trim().toLowerCase();
+    if (!query) return filtered;
+
+    return filtered.filter((n) => n.content.toLowerCase().includes(query));
+  }, [allNotes, view.mode, view.tagId, debouncedSearchQuery]);
 
   const createNote = useCallback(async () => {
     if (!userId) throw new Error("Cannot create a note without a logged-in user.");
@@ -197,6 +210,7 @@ export function useNotes() {
   }, [userId, refresh]);
 
   return {
+    allNotes,
     notes,
     loaded,
     createNote,
@@ -209,5 +223,7 @@ export function useNotes() {
     refresh,
     view,
     setView,
+    searchQuery,
+    setSearchQuery,
   };
 }
