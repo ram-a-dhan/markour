@@ -1,11 +1,9 @@
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { ActionIcon, NavLink, Tooltip } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { XIcon } from "@phosphor-icons/react";
 import { useNotes } from "@/src/context/NotesContext";
 import { useTags } from "@/src/context/TagsContext";
-import { NOTE_LIST_PATH } from "@/src/constants/url";
 
 interface ITagItemProps {
   tag: ITagFE;
@@ -16,14 +14,12 @@ interface ITagItemProps {
 export default function TagItem({ tag, editModeTags, closeDrawer }: ITagItemProps) {
   const [isLoadingDelete, setIsLoadingDelete] = useState<boolean>(false);
 
-  const { view, setView } = useNotes();
+  const { setSelectedNoteId, view, setView } = useNotes();
   const { deleteTag } = useTags();
-  
-  const router = useRouter();
 
   const onClickTagItem = (mode: IView["mode"], tagId: IView["tagId"]) => {
     setView({ mode, tagId });
-    router.replace(NOTE_LIST_PATH);
+    setSelectedNoteId(null);
     closeDrawer();
   };
 

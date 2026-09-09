@@ -10,9 +10,7 @@ import {
   SidebarSimpleIcon,
   TrashIcon,
 } from "@phosphor-icons/react";
-import { useParams, useRouter } from "next/navigation";
 import { useNotes } from "@/src/context/NotesContext";
-import { NOTE_LIST_PATH } from "@/src/constants/url";
 
 interface INoteDetailProps extends PropsWithChildren {
   openedNavbarDesktop: boolean;
@@ -28,11 +26,10 @@ export default function NoteDetail({
   toggleNavbarMobile,
   children,
 }: INoteDetailProps) {
-  const params = useParams<{ id: string }>();
-  const router = useRouter();
-
   const {
     allNotes,
+    selectedNoteId,
+    setSelectedNoteId,
     loaded,
     togglePinnedNote,
     deleteNote,
@@ -40,18 +37,18 @@ export default function NoteDetail({
     purgeNotes,
   } = useNotes();
 
-  const note = allNotes.find((n) => n.id === params.id);
+  const note = selectedNoteId ? allNotes.find((n) => n.id === selectedNoteId) : undefined;
 
   const onClickRestore = async (noteId: string) => {
     await restoreNote(noteId);
     if (!openedNavbarMobile) toggleNavbarMobile();
-    router.replace(NOTE_LIST_PATH);
+    setSelectedNoteId(null);
   };
 
   const onConfirmDelete = async (noteId: string) => {
     await deleteNote(noteId);
     if (!openedNavbarMobile) toggleNavbarMobile();
-    router.replace(NOTE_LIST_PATH);
+    setSelectedNoteId(null);
   };
 
   const onClickDelete = async (noteId: string) => {
@@ -74,7 +71,7 @@ export default function NoteDetail({
   const onConfirmPurge = async (noteId: string) => {
     await purgeNotes([noteId]);
     if (!openedNavbarMobile) toggleNavbarMobile();
-    router.replace(NOTE_LIST_PATH);
+    setSelectedNoteId(null);
   }
 
   const onClickPurge = async (noteId: string) => {

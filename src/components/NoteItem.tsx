@@ -1,7 +1,7 @@
 import { NavLink } from "@mantine/core";
-import { useParams } from "next/navigation";
 import { type ILocalNote } from "@/src/lib/localdb";
 import { PushPinIcon } from "@phosphor-icons/react";
+import { useNotes } from "@/src/context/NotesContext";
 
 interface INoteItemProps {
   note: ILocalNote;
@@ -11,13 +11,13 @@ interface INoteItemProps {
 export default function NoteItem({ note, onClickOpen }: INoteItemProps) {
   const [title, ...content] = note.content.trimStart().split("\n");
 
-  const params = useParams<{ id?: string }>();
+  const { selectedNoteId } = useNotes();
 
   return (
     <NavLink
       label={title.replace(/(&nbsp;|#)/g, "").trim() || "Untitled"}
       description={content.join(" ").trim()}
-      active={params.id === note.id}
+      active={note.id === selectedNoteId}
       onClick={() => onClickOpen(note.id)}
       variant="light"
       component="div"

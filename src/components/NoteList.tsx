@@ -1,5 +1,4 @@
 import { type ChangeEvent, useMemo } from "react";
-import { useRouter } from "next/navigation";
 import { ActionIcon, AppShell, TextInput, ThemeIcon, Tooltip } from "@mantine/core";
 import { modals } from "@mantine/modals";
 import { notifications } from "@mantine/notifications";
@@ -13,7 +12,6 @@ import {
 import { useNotes } from "@/src/context/NotesContext";
 import { useTags } from "@/src/context/TagsContext";
 import NoteItem from "@/src/components/NoteItem";
-import { NOTE_DETAIL_PATH, NOTE_LIST_PATH } from "@/src/constants/url";
 
 interface INoteListProps {
   openDrawer: () => void;
@@ -26,10 +24,9 @@ export default function NoteList({
   openedNavbarMobile,
   closeNavbarMobile,
 }: INoteListProps) {
-  const router = useRouter();
-
   const {
     notes,
+    setSelectedNoteId,
     createNote,
     purgeNotes,
     view,
@@ -53,18 +50,18 @@ export default function NoteList({
   const onClickCreate = async () => {
     const id = await createNote();
     if (openedNavbarMobile) closeNavbarMobile();
-    router.replace(NOTE_DETAIL_PATH(id));
+    setSelectedNoteId(id);
   };
 
   const onClickOpen = (id: string) => {
     if (openedNavbarMobile) closeNavbarMobile();
-    router.replace(NOTE_DETAIL_PATH(id));
+    setSelectedNoteId(id);
   };
 
   const onConfirmPurge = async () => {
     await purgeNotes(notes.map((n) => n.id));
     if (!openedNavbarMobile) closeNavbarMobile();
-    router.replace(NOTE_LIST_PATH);
+    setSelectedNoteId(null);
   }
 
   const onClickPurge = async () => {

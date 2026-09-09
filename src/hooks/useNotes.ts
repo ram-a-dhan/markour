@@ -30,7 +30,8 @@ export function useNotes() {
   const [view, setView] = useState<IView>({ mode: "notes" });
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [allNotes, setAllNotes] = useState<ILocalNote[]>([]);
-  const [loaded, setLoaded] = useState(false);
+  const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
+  const [loaded, setLoaded] = useState<boolean>(false);
   const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const [debouncedSearchQuery] = useDebouncedValue(searchQuery, 500);
@@ -212,6 +213,8 @@ export function useNotes() {
   return {
     allNotes,
     notes,
+    selectedNoteId,
+    setSelectedNoteId,
     loaded,
     createNote,
     updateNote,

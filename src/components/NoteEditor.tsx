@@ -4,7 +4,6 @@ import { useEffect, useRef } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { Markdown } from "@tiptap/markdown";
-import { TableKit } from "@tiptap/extension-table";
 import { TaskList, TaskItem } from "@tiptap/extension-list";
 import { Placeholder } from "@tiptap/extensions/placeholder";
 import styles from "@/src/styles/modules/NoteEditor.module.scss";
@@ -12,7 +11,6 @@ import styles from "@/src/styles/modules/NoteEditor.module.scss";
 const EDITOR_EXTENSIONS = [
   StarterKit,
   Markdown,
-  TableKit,
   TaskList,
   TaskItem,
   Placeholder.configure({

@@ -1,5 +1,4 @@
 import { useEffect, type MouseEventHandler } from "react";
-import { useRouter } from "next/navigation";
 import {
   ActionIcon,
   Avatar,
@@ -20,7 +19,6 @@ import { useSession } from "@/src/context/SessionContext";
 import { useNotes } from "@/src/context/NotesContext";
 import { useTags } from "@/src/context/TagsContext";
 import TagItem from "@/src/components/TagItem";
-import { NOTE_LIST_PATH } from "@/src/constants/url";
 
 interface IMenuProps {
   openedDrawer: boolean;
@@ -31,10 +29,8 @@ export default function Menu({ openedDrawer, closeDrawer }: IMenuProps) {
   const [expandedTags, { toggle: toggleTags }] = useDisclosure();
   const [editModeTags, { toggle: toggleEdit, close: closeEdit }] = useDisclosure();
 
-  const router = useRouter();
-
   const { user, logout } = useSession();
-  const { view, setView } = useNotes();
+  const { setSelectedNoteId, view, setView } = useNotes();
   const { tags } = useTags();
 
   useEffect(() => {
@@ -43,7 +39,7 @@ export default function Menu({ openedDrawer, closeDrawer }: IMenuProps) {
 
   const onClickNavItem = (mode: IView["mode"]) => {
     setView({ mode, tagId: undefined });
-    router.replace(NOTE_LIST_PATH);
+    setSelectedNoteId(null);
     closeDrawer();
   };
 
