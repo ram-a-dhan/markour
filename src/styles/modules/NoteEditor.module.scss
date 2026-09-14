@@ -120,4 +120,10 @@
       content: "Type image URL ";
     }
   }
+
+  :global(.image-wrapper .operation-item) {
+    &:hover {
+      background-color: var(--crepe-color-inverse) !important;
+    }
+  }
 }

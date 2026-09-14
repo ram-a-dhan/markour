@@ -104,6 +104,7 @@ export default function NoteEditor({
 
   useEffect(() => {
     if (!rootRef.current) return;
+    let needsInitalParse = (/\- |1. /m).test(content);
 
     const crepe = new Crepe({
       root: rootRef.current,
@@ -132,11 +133,18 @@ export default function NoteEditor({
             },
           }),
         ]);
+
         ctx.update(remarkStringifyOptionsCtx, (cfg) => ({
           ...cfg,
           bullet: "-" as const, // Milkdown's default is "*"
         }));
+
         ctx.get(listenerCtx).markdownUpdated((_ctx, markdown, prevMarkdown) => {
+          if (needsInitalParse) {
+            needsInitalParse = false;
+            // This skips the initial parse/normalization firing, not a real edit.
+            return;
+          }
           if (markdown !== prevMarkdown) {
             onChange(markdown);
           }
