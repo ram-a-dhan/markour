@@ -14,7 +14,7 @@ interface INoteTagsInputProps {
   disabled: boolean;
 }
 
-export function NoteTagsInput({ noteId, tagIds, disabled }: INoteTagsInputProps) {
+export default function NoteTagsInput({ noteId, tagIds, disabled }: INoteTagsInputProps) {
   const [searchValue, setSearchValue] = useState("");
   const { tags, createTag, refresh } = useTags();
   const { updateNoteTags } = useNotes();
