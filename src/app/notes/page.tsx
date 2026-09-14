@@ -1,9 +1,9 @@
 "use client";
 
+import { CircleNotchIcon } from "@phosphor-icons/react";
 import { useNotes } from "@/src/context/NotesContext";
-import { NoteEditor } from "@/src/components/NoteEditor";
-import { NoteTagsInput } from "@/src/components/NoteTagsInput";
-import { Skeleton } from "@mantine/core";
+import NoteEditor from "@/src/components/NoteEditor";
+import NoteTagsInput from "@/src/components/NoteTagsInput";
 
 export default function Notes() {
   const { allNotes, selectedNoteId, loaded, updateNote } = useNotes();
@@ -26,20 +26,18 @@ export default function Notes() {
   );
 
   if (!loaded) return (
-    <div className="flex flex-col gap-2 p-4">
-      <Skeleton height="2rem" width="33.33%" mb="sm" />
-      <Skeleton height="1rem" />
-      <Skeleton height="1rem" />
-      <Skeleton height="1rem" />
-      <Skeleton height="1rem" width="66.66%" mb="sm" />
-      <Skeleton height="1rem" />
-      <Skeleton height="1rem" />
-      <Skeleton height="1rem" />
-      <Skeleton height="1rem" width="66.66%" mb="sm" />
-      <Skeleton height="1rem" />
-      <Skeleton height="1rem" />
-      <Skeleton height="1rem" />
-      <Skeleton height="1rem" width="66.66%" mb="sm" />
+    <div className="flex justify-center gap-4 p-4">
+      <CircleNotchIcon size={34}>
+        <animateTransform
+          attributeName="transform"
+          attributeType="XML"
+          type="rotate"
+          dur="1s"
+          from="0 0 0"
+          to="360 0 0"
+          repeatCount="indefinite"
+        ></animateTransform>
+      </CircleNotchIcon>
     </div>
   );
 
