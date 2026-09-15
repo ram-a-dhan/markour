@@ -1,5 +1,6 @@
 import { PropsWithChildren } from "react";
 import { ActionIcon, AppShell, Burger, Menu, Tooltip } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
 import { modals } from "@mantine/modals";
 import { notifications } from "@mantine/notifications";
 import {
@@ -7,10 +8,12 @@ import {
   DotsThreeOutlineVerticalIcon,
   PushPinIcon,
   PushPinSimpleSlashIcon,
+  QuestionIcon,
   SidebarSimpleIcon,
   TrashIcon,
 } from "@phosphor-icons/react";
 import { useNotes } from "@/src/context/NotesContext";
+import HelpModal from "@/src/components/HelpModal";
 
 interface INoteDetailProps extends PropsWithChildren {
   openedNavbarDesktop: boolean;
@@ -26,6 +29,8 @@ export default function NoteDetail({
   toggleNavbarMobile,
   children,
 }: INoteDetailProps) {
+  const [openedHelpModal, { open: openHelpModal, close: closeHelpModal }] = useDisclosure();
+
   const {
     allNotes,
     selectedNoteId,
@@ -132,6 +137,15 @@ export default function NoteDetail({
               hiddenFrom="sm"
               size="sm"
             />
+            <Tooltip label="Help">
+              <ActionIcon
+                variant="transparent"
+                color="dark"
+                onClick={openHelpModal}
+              >
+                <QuestionIcon size={26} />
+              </ActionIcon>
+            </Tooltip>
           </div>
 
           {/* RIGHT */}
@@ -216,6 +230,12 @@ export default function NoteDetail({
           {children}
         </div>
       </AppShell.Main>
+
+      {/* HELP MODAL */}
+      <HelpModal
+        opened={openedHelpModal}
+        onClose={closeHelpModal}
+      />
     </>
   );
 }
