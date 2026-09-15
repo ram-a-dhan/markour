@@ -1,6 +1,6 @@
 "use client";
 
-import { CircleNotchIcon } from "@phosphor-icons/react";
+import { Skeleton } from "@mantine/core";
 import { useNotes } from "@/src/context/NotesContext";
 import NoteEditor from "@/src/components/NoteEditor";
 import NoteTagsInput from "@/src/components/NoteTagsInput";
@@ -15,6 +15,24 @@ export default function Notes() {
     updateNote(note.id, { content: markdown });
   };
 
+  if (!loaded) return (
+    <div className="flex flex-col gap-2 p-4">
+      <Skeleton height={32} width="33.33%" />
+      <Skeleton height={16} className="mt-2" />
+      <Skeleton height={16} />
+      <Skeleton height={16} />
+      <Skeleton height={16} width="66.66%" />
+      <Skeleton height={16} className="mt-2" />
+      <Skeleton height={16} />
+      <Skeleton height={16} />
+      <Skeleton height={16} width="66.66%" />
+      <Skeleton height={16} className="mt-2" />
+      <Skeleton height={16} />
+      <Skeleton height={16} />
+      <Skeleton height={16} width="66.66%" />
+    </div>
+  );
+
   if (!selectedNoteId) return null;
 
   if (!note) return (
@@ -22,22 +40,6 @@ export default function Notes() {
       <span className="italic text-(--mantine-color-dimmed)">
         Note not found.
       </span>
-    </div>
-  );
-
-  if (!loaded) return (
-    <div className="flex justify-center gap-4 p-4">
-      <CircleNotchIcon size={34}>
-        <animateTransform
-          attributeName="transform"
-          attributeType="XML"
-          type="rotate"
-          dur="1s"
-          from="0 0 0"
-          to="360 0 0"
-          repeatCount="indefinite"
-        ></animateTransform>
-      </CircleNotchIcon>
     </div>
   );
 
