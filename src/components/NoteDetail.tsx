@@ -9,11 +9,14 @@ import {
   PushPinIcon,
   PushPinSimpleSlashIcon,
   QuestionIcon,
+  ShareFatIcon,
   SidebarSimpleIcon,
   TrashIcon,
 } from "@phosphor-icons/react";
 import { useNotes } from "@/src/context/NotesContext";
+import { EditorProvider } from "@/src/context/EditorContext";
 import HelpModal from "@/src/components/HelpModal";
+import ShareModal from "@/src/components/ShareModal";
 
 interface INoteDetailProps extends PropsWithChildren {
   openedNavbarDesktop: boolean;
@@ -30,6 +33,7 @@ export default function NoteDetail({
   children,
 }: INoteDetailProps) {
   const [openedHelpModal, { open: openHelpModal, close: closeHelpModal }] = useDisclosure();
+  const [openedShareModal, { open: openShareModal, close: closeShareModal }] = useDisclosure();
 
   const {
     allNotes,
@@ -48,6 +52,10 @@ export default function NoteDetail({
     await restoreNote(noteId);
     if (!openedNavbarMobile) toggleNavbarMobile();
     setSelectedNoteId(null);
+    notifications.show({
+      title: "Success Restoring Note",
+      message: "Note restored successfully.",
+    });
   };
 
   const onConfirmDelete = async (noteId: string) => {
@@ -68,6 +76,10 @@ export default function NoteDetail({
       onConfirm: async () => {
         modals.updateModal({ modalId, confirmProps: { color: "red", loading: true } });
         await onConfirmDelete(noteId);
+        notifications.show({
+          title: "Success Moving to Trash",
+          message: "Note moved to Trash successfully.",
+        });
         modals.close(modalId);
       },
     });
@@ -95,6 +107,10 @@ export default function NoteDetail({
             confirmProps: { color: "red", loading: true },
           });
           await onConfirmPurge(noteId);
+          notifications.show({
+            title: "Success Deleting Note",
+            message: "Note deleted successfully.",
+          });
           modals.close(modalId);
         } catch (error) {
           modals.updateModal({
@@ -112,7 +128,7 @@ export default function NoteDetail({
   };
 
   return (
-    <>
+    <EditorProvider>
       {/* NOTE HEADER */}
       <AppShell.Header p="md">
         <div className="flex items-center justify-between gap-4">
@@ -152,6 +168,7 @@ export default function NoteDetail({
           <div className="flex items-center gap-4">
             {loaded && !!note?.id && (
               <>
+                {/* NOTE OPTIONS */}
                 {!!note.deletedAt && (
                   <Tooltip label="Restore Note">
                     <ActionIcon
@@ -181,7 +198,18 @@ export default function NoteDetail({
                     </ActionIcon>
                   </Tooltip>
                 )}
-                {/* NOTE OPTIONS */}
+
+                <Tooltip label="Share Note">
+                  <ActionIcon
+                    variant="transparent"
+                    color="dark"
+                    onClick={openShareModal}
+                  >
+                    <ShareFatIcon size={26} />
+                  </ActionIcon>
+                </Tooltip>
+
+                {/* THREE DOT MENU */}
                 <Menu shadow="md">
                   <Menu.Target>
                     <Tooltip label="Note Options">
@@ -236,6 +264,12 @@ export default function NoteDetail({
         opened={openedHelpModal}
         onClose={closeHelpModal}
       />
-    </>
+
+      {/* SHARE MODAL */}
+      <ShareModal
+        opened={openedShareModal}
+        onClose={closeShareModal}
+      />
+    </EditorProvider>
   );
 }

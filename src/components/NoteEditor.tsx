@@ -12,6 +12,7 @@ import { listener, listenerCtx } from "@milkdown/kit/plugin/listener";
 import { Plugin, PluginKey } from "@milkdown/kit/prose/state";
 import { DOMParser as ProseDOMParser } from "@milkdown/kit/prose/model";
 import { type EditorView } from "@milkdown/kit/prose/view";
+import { useEditor } from "@/src/context/EditorContext";
 import styles from "@/src/styles/modules/NoteEditor.module.scss";
 interface INoteEditorProps {
   noteId: string;
@@ -29,6 +30,8 @@ export default function NoteEditor({
   const rootRef = useRef<HTMLDivElement>(null);
   const crepeRef = useRef<Crepe | null>(null);
   const loadedNoteId = useRef<string | null>(null);
+
+  const { setEditor } = useEditor();
 
   const handlePaste = (view: EditorView, event: ClipboardEvent) => {
     const cb = event.clipboardData;
@@ -104,6 +107,7 @@ export default function NoteEditor({
 
   useEffect(() => {
     if (!rootRef.current) return;
+    if (!noteId) setEditor(null);
     let needsInitalParse = (/\- |1. /m).test(content);
 
     const crepe = new Crepe({
@@ -158,6 +162,7 @@ export default function NoteEditor({
     crepe.create().then(() => {
       loadedNoteId.current = noteId;
       crepe.setReadonly(!!disabled);
+      setEditor(crepe.editor);
     });
 
     crepeRef.current = crepe;
@@ -165,6 +170,7 @@ export default function NoteEditor({
     return () => {
       crepe.destroy();
       crepeRef.current = null;
+      setEditor(null);
     };
     // recreate per note switch
     // Crepe doesn't cleanly support swapping `defaultValue` post-creation

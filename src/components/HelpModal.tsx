@@ -221,7 +221,6 @@ const markdownGuideData: TableData = {
 interface IHelpModalProps {
   opened: boolean;
   onClose: () => void;
-
 }
 
 export default function HelpModal({ opened, onClose }: IHelpModalProps) {

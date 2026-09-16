@@ -1,5 +1,5 @@
 import { type ChangeEvent, useMemo } from "react";
-import { ActionIcon, AppShell, TextInput, ThemeIcon, Tooltip } from "@mantine/core";
+import { ActionIcon, AppShell, Skeleton, TextInput, ThemeIcon, Tooltip } from "@mantine/core";
 import { modals } from "@mantine/modals";
 import { notifications } from "@mantine/notifications";
 import {
@@ -13,6 +13,8 @@ import { useNotes } from "@/src/context/NotesContext";
 import { useTags } from "@/src/context/TagsContext";
 import NoteItem from "@/src/components/NoteItem";
 
+const DUMMY_LIST = Array.from({ length: 7 }, (_, i) => i + 1);
+
 interface INoteListProps {
   openDrawer: () => void;
   openedNavbarMobile: boolean;
@@ -25,6 +27,7 @@ export default function NoteList({
   closeNavbarMobile,
 }: INoteListProps) {
   const {
+    loaded,
     notes,
     setSelectedNoteId,
     createNote,
@@ -203,13 +206,21 @@ export default function NoteList({
         className="overscroll-contain overflow-y-auto"
         grow
       >
-        {notes.map((n) => (
-          <NoteItem
-            key={n.id}
-            note={n}
-            onClickOpen={onClickOpen}
-          />
-        ))}
+        {!loaded
+          ? DUMMY_LIST.map((i) => (
+              <div key={`dummy${i}`} className="flex flex-col gap-2 p-4">
+                <Skeleton height={16} width="50%" />
+                <Skeleton height={12} />
+              </div>
+            ))
+          : notes.map((n) => (
+              <NoteItem
+                key={n.id}
+                note={n}
+                onClickOpen={onClickOpen}
+              />
+            ))
+        }
       </AppShell.Section>
     </AppShell.Navbar>
   );
