@@ -108,6 +108,8 @@ export default function NoteEditor({
   useEffect(() => {
     if (!rootRef.current) return;
     if (!noteId) setEditor(null);
+
+    let destroyed = false;
     let needsInitalParse = (/\- |1. /m).test(content);
 
     const crepe = new Crepe({
@@ -131,10 +133,7 @@ export default function NoteEditor({
           ...plg,
           new Plugin({
             key: new PluginKey("block-file-paste-drop"),
-            props: {
-              handlePaste,
-              handleDrop,
-            },
+            props: { handlePaste, handleDrop },
           }),
         ]);
 
@@ -160,6 +159,10 @@ export default function NoteEditor({
     crepe.editor.remove(remarkPreserveEmptyLinePlugin);
 
     crepe.create().then(() => {
+      if (destroyed) {
+        crepe.destroy();
+        return;
+      };
       loadedNoteId.current = noteId;
       crepe.setReadonly(!!disabled);
       setEditor(crepe.editor);
@@ -168,6 +171,7 @@ export default function NoteEditor({
     crepeRef.current = crepe;
 
     return () => {
+      destroyed = true;
       crepe.destroy();
       crepeRef.current = null;
       setEditor(null);
