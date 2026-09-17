@@ -177,10 +177,14 @@ export default function NoteList({
         px="md"
         h={48}
         className="grow-0 shrink-0 flex items-center border-b border-b-(--app-shell-border-color)"
+        classNames={{
+          section: searchQuery.length ? "bg-(--mantine-color-blue-light)" : "",
+        }}
       >
         <ThemeIcon
           variant="transparent"
           color="dark"
+          classNames={{ root: searchQuery.length ? "[&_svg]:text-(--mantine-color-blue-light-color)" : "" }}
         >
           <MagnifyingGlassIcon size={22} />
         </ThemeIcon>
@@ -189,6 +193,7 @@ export default function NoteList({
           variant="unstyled"
           placeholder="Search Notes..."
           className="flex-1 px-2"
+          classNames={{ input: searchQuery.length ? "text-(--mantine-color-blue-light-color)!" : "" }}
           value={searchQuery}
           onChange={onChangeSearchQuery}
         />
@@ -196,6 +201,7 @@ export default function NoteList({
           variant="transparent"
           color="dark"
           onClick={onDeleteSearchQuery}
+          classNames={{ root: searchQuery.length ? "[&_svg]:text-(--mantine-color-blue-light-color)" : "" }}
         >
           <XCircleIcon size={22} />
         </ActionIcon>
@@ -206,21 +212,26 @@ export default function NoteList({
         className="overscroll-contain overflow-y-auto"
         grow
       >
-        {!loaded
-          ? DUMMY_LIST.map((i) => (
-              <div key={`dummy${i}`} className="flex flex-col gap-2 p-4">
-                <Skeleton height={16} width="50%" />
-                <Skeleton height={12} />
-              </div>
-            ))
-          : notes.map((n) => (
-              <NoteItem
-                key={n.id}
-                note={n}
-                onClickOpen={onClickOpen}
-              />
-            ))
-        }
+        {!loaded && DUMMY_LIST.map((i) => (
+          <div key={`dummy${i}`} className="flex flex-col gap-2 p-4">
+            <Skeleton height={16} width="50%" />
+            <Skeleton height={12} />
+          </div>
+        ))}
+        {loaded && !!notes.length && notes.map((n) => (
+          <NoteItem
+            key={n.id}
+            note={n}
+            onClickOpen={onClickOpen}
+          />
+        ))}
+        {loaded && !notes.length && (
+          <div className="flex items-center justify-center h-12">
+            <span className="italic text-(--mantine-color-dimmed)">
+              Nothing here.
+            </span>
+          </div>
+        )}
       </AppShell.Section>
     </AppShell.Navbar>
   );
