@@ -6,7 +6,7 @@ import NoteEditor from "@/src/components/NoteEditor";
 import NoteTagsInput from "@/src/components/NoteTagsInput";
 
 export default function Notes() {
-  const { allNotes, selectedNoteId, loaded, updateNote } = useNotes();
+  const { allNotes, selectedNoteId, loaded, updateNote, view } = useNotes();
 
   const note = selectedNoteId ? allNotes.find((n) => n.id === selectedNoteId) : undefined;
 
@@ -33,10 +33,18 @@ export default function Notes() {
     </div>
   );
 
+  if (!selectedNoteId && view.mode === "notes") return (
+    <div className="flex items-center justify-center h-12">
+      <span className="italic text-(--mantine-color-dimmed)">
+        Open a note or create a new one.
+      </span>
+    </div>
+  );
+
   if (!selectedNoteId) return null;
 
   if (!note) return (
-    <div className="flex justify-center gap-4 p-4">
+    <div className="flex items-center justify-center h-12">
       <span className="italic text-(--mantine-color-dimmed)">
         Note not found.
       </span>

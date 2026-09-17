@@ -86,6 +86,8 @@ export default function NoteTagsInput({ noteId, tagIds, disabled }: INoteTagsInp
       acceptValueOnBlur={false}
       className="sticky bottom-0 bg-(--mantine-color-body) p-4 border-t border-t-(--app-shell-border-color)"
       classNames={{
+        input: disabled ? "cursor-not-allowed!" : "",
+        inputField: disabled ? "cursor-not-allowed!" : "",
         pill: "[:where([data-mantine-color-scheme='dark'])_&]:bg-(--mantine-color-gray-8)!"
       }}
       readOnly={disabled}

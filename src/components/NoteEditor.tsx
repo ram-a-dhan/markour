@@ -140,6 +140,7 @@ export default function NoteEditor({
         ctx.update(remarkStringifyOptionsCtx, (cfg) => ({
           ...cfg,
           bullet: "-" as const, // Milkdown's default is "*"
+          rule: "-" as const, // Milkdown's default is "*"
         }));
 
         ctx.get(listenerCtx).markdownUpdated((_ctx, markdown, prevMarkdown) => {
