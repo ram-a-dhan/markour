@@ -185,13 +185,19 @@ export default function NoteList({
         h={48}
         className="grow-0 shrink-0 flex items-center border-b border-b-(--app-shell-border-color)"
         classNames={{
-          section: searchQuery.length ? "bg-(--mantine-color-blue-light)" : "",
+          section: searchQuery.length
+            ? "bg-(--mantine-color-blue-light) hover:bg-(--mantine-color-blue-light-hover)"
+            : "hover:bg-(--mantine-color-gray-0) dark:hover:bg-(--mantine-color-dark-6)",
         }}
       >
         <ThemeIcon
           variant="transparent"
           color="dark"
-          classNames={{ root: searchQuery.length ? "[&_svg]:text-(--mantine-color-blue-light-color)" : "" }}
+          classNames={{
+            root: searchQuery.length
+              ? "[&_svg]:text-(--mantine-color-blue-light-color)"
+              : "",
+          }}
         >
           <MagnifyingGlassIcon size={22} />
         </ThemeIcon>
@@ -200,7 +206,11 @@ export default function NoteList({
           variant="unstyled"
           placeholder="Search Notes..."
           className="flex-1 px-2"
-          classNames={{ input: searchQuery.length ? "text-(--mantine-color-blue-light-color)!" : "" }}
+          classNames={{
+            input: searchQuery.length
+              ? "text-(--mantine-color-blue-light-color)!"
+              : "",
+          }}
           value={searchQuery}
           onChange={onChangeSearchQuery}
         />
@@ -208,7 +218,11 @@ export default function NoteList({
           variant="transparent"
           color="dark"
           onClick={onDeleteSearchQuery}
-          classNames={{ root: searchQuery.length ? "[&_svg]:text-(--mantine-color-blue-light-color)" : "" }}
+          classNames={{
+            root: searchQuery.length
+              ? "[&_svg]:text-(--mantine-color-blue-light-color)"
+              : "",
+          }}
         >
           <XCircleIcon size={22} />
         </ActionIcon>
