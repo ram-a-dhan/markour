@@ -1,5 +1,6 @@
 import { type ChangeEvent, useMemo } from "react";
 import { ActionIcon, AppShell, Skeleton, TextInput, ThemeIcon, Tooltip } from "@mantine/core";
+import { useRovingIndex } from "@mantine/hooks";
 import { modals } from "@mantine/modals";
 import { notifications } from "@mantine/notifications";
 import {
@@ -37,6 +38,12 @@ export default function NoteList({
     setSearchQuery,
   } = useNotes();
   const { tags } = useTags();
+
+  const { getItemProps } = useRovingIndex({
+    total: notes.length,
+    orientation: "vertical",
+    loop: false,
+  });
 
   const selectedTag = useMemo(() => {
     return tags.find((t) => t.id === view.tagId);
@@ -218,11 +225,13 @@ export default function NoteList({
             <Skeleton height={12} />
           </div>
         ))}
-        {loaded && !!notes.length && notes.map((n) => (
+        {loaded && !!notes.length && notes.map((n, i) => (
           <NoteItem
             key={n.id}
             note={n}
             onClickOpen={onClickOpen}
+            getItemProps={getItemProps}
+            index={i}
           />
         ))}
         {loaded && !notes.length && (

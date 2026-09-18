@@ -1,17 +1,32 @@
 import { useState } from "react";
 import { ActionIcon, NavLink, Tooltip } from "@mantine/core";
+import { type UseRovingIndexGetItemPropsInput } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { XIcon } from "@phosphor-icons/react";
 import { useNotes } from "@/src/context/NotesContext";
 import { useTags } from "@/src/context/TagsContext";
+import { onKeyDownNavLink } from "@/src/utils/eventListener";
 
 interface ITagItemProps {
   tag: ITagFE;
   editModeTags: boolean;
   closeDrawer: () => void;
+  getItemProps: (options: UseRovingIndexGetItemPropsInput) => {
+    tabIndex: 0 | -1;
+    onKeyDown: React.KeyboardEventHandler;
+    onClick: React.MouseEventHandler;
+    ref: React.RefCallback<HTMLElement>;
+  };
+  index: number;
 }
 
-export default function TagItem({ tag, editModeTags, closeDrawer }: ITagItemProps) {
+export default function TagItem({
+  tag,
+  editModeTags,
+  closeDrawer,
+  getItemProps,
+  index,
+}: ITagItemProps) {
   const [isLoadingDelete, setIsLoadingDelete] = useState<boolean>(false);
 
   const { setSelectedNoteId, view, setView } = useNotes();
@@ -62,13 +77,17 @@ export default function TagItem({ tag, editModeTags, closeDrawer }: ITagItemProp
       }
       label={tag.name}
       active={view.mode === "tag" && view.tagId === tag.id}
-      onClick={() => onClickTagItem("tag", tag.id)}
       variant="light"
       component="div"
       className="p-4!"
       classNames={{
         label: "text-base!"
       }}
+      {...getItemProps({
+        index,
+        onClick: () => onClickTagItem("tag", tag.id),
+        onKeyDown: (e) => onKeyDownNavLink(e, () => onClickTagItem("tag", tag.id))
+      })}
     />
   );
 }
