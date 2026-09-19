@@ -4,6 +4,14 @@ const editorGuideData: TableData = {
   body: [
     [
       <>
+        <Kbd>/</Kbd>
+      </>,
+      <>
+        Open block commands
+      </>,
+    ],
+    [
+      <>
         <Kbd>/</Kbd> + <code>heading</code>
       </>,
       <>
@@ -95,7 +103,16 @@ const markdownGuideData: TableData = {
         <code className="whitespace-nowrap"># Text</code>&ensp;or&ensp;<code className="whitespace-nowrap">## Text</code> or so on...
       </>,
       <>
-        Heading
+        <b className="font-serif">Heading</b>
+      </>,
+    ],
+    [
+      <>
+        <Kbd>Shift</Kbd> + <Kbd>Enter</Kbd>
+      </>,
+      <></>,
+      <>
+        Line Break
       </>,
     ],
     [
@@ -133,6 +150,37 @@ const markdownGuideData: TableData = {
     ],
     [
       <>
+        <Kbd>-</Kbd> + <Kbd>Space</Kbd>
+      </>,
+      <>
+        <code className="whitespace-nowrap">- Text</code>
+      </>,
+      <>
+        &bull;&ensp;Bullet List
+      </>,
+    ],
+    [
+      <>
+        <Kbd>1</Kbd> + <Kbd>.</Kbd> + <Kbd>Space</Kbd>
+      </>,
+      <>
+        <code className="whitespace-nowrap">1. Text</code>
+      </>,
+      <>
+        1.&ensp;Numbered List
+      </>,
+    ],
+    [
+      <></>,
+      <>
+        <code className="whitespace-nowrap">- [ ] Text</code> or <code className="whitespace-nowrap">- [x] Text</code>
+      </>,
+      <>
+        <input type="checkbox" checked readOnly tabIndex={-1} />&ensp;Task List
+      </>,
+    ],
+    [
+      <>
         <Kbd>Ctrl</Kbd> + <Kbd>E</Kbd>
       </>,
       <>
@@ -153,44 +201,13 @@ const markdownGuideData: TableData = {
     ],
     [
       <>
-        <Kbd>-</Kbd> + <Kbd>Space</Kbd>
-      </>,
-      <>
-        <code className="whitespace-nowrap">- Text</code>
-      </>,
-      <>
-        Bullet List
-      </>,
-    ],
-    [
-      <>
-        <Kbd>1</Kbd> + <Kbd>.</Kbd> + <Kbd>Space</Kbd>
-      </>,
-      <>
-        <code className="whitespace-nowrap">1. Text</code>
-      </>,
-      <>
-        Numbered List
-      </>,
-    ],
-    [
-      <></>,
-      <>
-        <code className="whitespace-nowrap">- [ ] Text</code> or <code className="whitespace-nowrap">- [x] Text</code>
-      </>,
-      <>
-        Task List
-      </>,
-    ],
-    [
-      <>
         <Kbd>&gt;</Kbd> + <Kbd>Space</Kbd>
       </>,
       <>
         <code className="whitespace-nowrap">&gt; Text</code>
       </>,
       <>
-        Quote Block
+        <i className="border-l-2">&ensp;Quote Block</i>
       </>,
     ],
     [
@@ -198,10 +215,10 @@ const markdownGuideData: TableData = {
         <Kbd>`</Kbd> + <Kbd>`</Kbd> + <Kbd>`</Kbd> + <Kbd>Enter</Kbd>
       </>,
       <>
-        ```
+        <code>```</code>
       </>,
       <>
-        Code Block
+        <code className="bg-[black] text-[white] px-1 py-0.5">Code Block</code>
       </>,
     ],
     [
@@ -209,7 +226,7 @@ const markdownGuideData: TableData = {
         <Kbd>-</Kbd> + <Kbd>-</Kbd> + <Kbd>-</Kbd>
       </>,
       <>
-        ---
+        <code>---</code>
       </>,
       <>
         Divider
