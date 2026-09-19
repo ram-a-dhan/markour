@@ -86,6 +86,7 @@ export default function Menu({ openedDrawer, closeDrawer }: IMenuProps) {
           role="button"
           className="p-4!"
           classNames={{
+            root: "focus:bg-(--mantine-color-gray-0)! dark:focus:bg-(--mantine-color-dark-6)! data-active:focus:bg-(--mantine-color-blue-light-hover)!", 
             label: "text-base!",
           }}
           {...getItemProps({
@@ -103,6 +104,7 @@ export default function Menu({ openedDrawer, closeDrawer }: IMenuProps) {
           role="button"
           className="p-4!"
           classNames={{
+            root: "focus:bg-(--mantine-color-gray-0)! dark:focus:bg-(--mantine-color-dark-6)! data-active:focus:bg-(--mantine-color-blue-light-hover)!", 
             label: "text-base!",
           }}
           {...getItemProps({
@@ -138,6 +140,7 @@ export default function Menu({ openedDrawer, closeDrawer }: IMenuProps) {
           role="button"
           className="p-4!"
           classNames={{
+            root: "focus:bg-(--mantine-color-gray-0)! dark:focus:bg-(--mantine-color-dark-6)! data-active:focus:bg-(--mantine-color-blue-light-hover)!", 
             label: "text-base!",
             section: "gap-4"
           }}
