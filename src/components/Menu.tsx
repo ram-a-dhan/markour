@@ -44,6 +44,12 @@ export default function Menu({ openedDrawer, closeDrawer }: IMenuProps) {
     loop: false,
   });
 
+  const { getItemProps: tagGetItemProps } = useRovingIndex({
+    total: tags.length,
+    orientation: "vertical",
+    loop: false,
+  });
+
   useEffect(() => {
     if (!expandedTags || !openedDrawer) closeEdit();
   }, [expandedTags, openedDrawer, closeEdit]);
@@ -77,6 +83,7 @@ export default function Menu({ openedDrawer, closeDrawer }: IMenuProps) {
           active={view.mode === "notes"}
           variant="light"
           component="div"
+          role="button"
           className="p-4!"
           classNames={{
             label: "text-base!",
@@ -93,6 +100,7 @@ export default function Menu({ openedDrawer, closeDrawer }: IMenuProps) {
           active={view.mode === "trash"}
           variant="light"
           component="div"
+          role="button"
           className="p-4!"
           classNames={{
             label: "text-base!",
@@ -127,6 +135,7 @@ export default function Menu({ openedDrawer, closeDrawer }: IMenuProps) {
           active={false}
           variant="filled"
           component="div"
+          role="button"
           className="p-4!"
           classNames={{
             label: "text-base!",
@@ -147,6 +156,8 @@ export default function Menu({ openedDrawer, closeDrawer }: IMenuProps) {
               closeDrawer={closeDrawer}
               getItemProps={getItemProps}
               index={i + 3}
+              tagGetItemProps={tagGetItemProps}
+              tagIndex={i}
             />
           ))}
           {loaded && !tags.length && (
