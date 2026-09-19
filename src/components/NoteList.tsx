@@ -186,8 +186,8 @@ export default function NoteList({
         className="grow-0 shrink-0 flex items-center border-b border-b-(--app-shell-border-color)"
         classNames={{
           section: searchQuery.length
-            ? "bg-(--mantine-color-blue-light) hover:bg-(--mantine-color-blue-light-hover)"
-            : "hover:bg-(--mantine-color-gray-0) dark:hover:bg-(--mantine-color-dark-6)",
+            ? "bg-(--mantine-color-blue-light) hover:bg-(--mantine-color-blue-light-hover) focus-within:bg-(--mantine-color-blue-light-hover)"
+            : "hover:bg-(--mantine-color-gray-0) focus-within:bg-(--mantine-color-gray-0) dark:hover:bg-(--mantine-color-dark-6) dark:focus-within:bg-(--mantine-color-dark-6)",
         }}
       >
         <ThemeIcon
