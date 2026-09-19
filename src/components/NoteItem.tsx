@@ -32,9 +32,9 @@ export default function NoteItem({
       label={title.replace(/(&nbsp;|#)/g, "").trim() || "Untitled"}
       description={content.join(" ").trim()}
       active={note.id === selectedNoteId}
-      role="button"
       variant="light"
       component="div"
+      role="button"
       className="p-4!"
       classNames={{
         label: "text-base! truncate",

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { type KeyboardEvent, type MouseEvent, useState } from "react";
 import { ActionIcon, NavLink, Tooltip } from "@mantine/core";
 import { type UseRovingIndexGetItemPropsInput } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
@@ -18,6 +18,13 @@ interface ITagItemProps {
     ref: React.RefCallback<HTMLElement>;
   };
   index: number;
+  tagGetItemProps: (options: UseRovingIndexGetItemPropsInput) => {
+    tabIndex: 0 | -1;
+    onKeyDown: React.KeyboardEventHandler;
+    onClick: React.MouseEventHandler;
+    ref: React.RefCallback<HTMLElement>;
+  };
+  tagIndex: number;
 }
 
 export default function TagItem({
@@ -26,6 +33,8 @@ export default function TagItem({
   closeDrawer,
   getItemProps,
   index,
+  tagGetItemProps,
+  tagIndex,
 }: ITagItemProps) {
   const [isLoadingDelete, setIsLoadingDelete] = useState<boolean>(false);
 
@@ -38,7 +47,7 @@ export default function TagItem({
     closeDrawer();
   };
 
-  const onClickDeleteTag = async (tagId: string): Promise<void> => {
+  const onConfirmDeleteTag = async (tagId: string): Promise<void> => {
     try {
       setIsLoadingDelete(true);
       await deleteTag(tagId);
@@ -54,6 +63,19 @@ export default function TagItem({
     }
   }
 
+  const onClickDeleteTag = async (event: MouseEvent, tagId: string): Promise<void> => {
+    event.stopPropagation();
+    await onConfirmDeleteTag(tagId);
+  };
+
+  const onKeyDownDeleteTag = async (event: KeyboardEvent, tagId: string): Promise<void> => {
+    if (event.key === "Enter" || event.code === "Space") {
+      event.preventDefault();
+      event.stopPropagation();
+      await onConfirmDeleteTag(tagId);
+    }
+  };
+
   return (
     <NavLink
       leftSection={<div className="w-6" />}
@@ -64,11 +86,12 @@ export default function TagItem({
               color="red"
               size="sm"
               radius="xl"
-              onClick={(e) => {
-                e.stopPropagation();
-                onClickDeleteTag(tag.id);
-              }}
               loading={isLoadingDelete}
+              {...tagGetItemProps({
+                index: tagIndex,
+                onClick: (e) => onClickDeleteTag(e, tag.id),
+                onKeyDown: (e) => onKeyDownDeleteTag(e, tag.id),
+              })}
             >
               <XIcon />
             </ActionIcon>
@@ -79,6 +102,7 @@ export default function TagItem({
       active={view.mode === "tag" && view.tagId === tag.id}
       variant="light"
       component="div"
+      role="button"
       className="p-4!"
       classNames={{
         label: "text-base!"
