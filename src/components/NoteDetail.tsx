@@ -71,6 +71,7 @@ export default function NoteDetail({
       title: "Move to Trash",
       children: "Are you sure moving this note to the trash? It will still be accessible in the trash and can be restored later.",
       labels: { confirm: "Move to Trash", cancel: "Cancel" },
+      overlayProps: { blur: 2 },
       confirmProps: { color: "red" },
       closeOnConfirm: false,
       onConfirm: async () => {
@@ -98,6 +99,7 @@ export default function NoteDetail({
       title: "Delete Permanently",
       children: "Are you sure deleting this note permanently? It will be lost forever.",
       labels: { confirm: "Delete Permanently", cancel: "Cancel" },
+      overlayProps: { blur: 2 },
       confirmProps: { color: "red" },
       closeOnConfirm: false,
       onConfirm: async () => {

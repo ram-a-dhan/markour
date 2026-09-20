@@ -1,0 +1,5 @@
+:global(.mantine-Drawer-content) {
+  @media (max-width: 36em) {
+    --drawer-size: 100% !important;
+  }
+}

@@ -1,5 +1,5 @@
 import { Button, Modal } from "@mantine/core";
-import { ArticleIcon, TextAlignJustifyIcon } from "@phosphor-icons/react";
+import { MarkdownLogoIcon, MicrosoftWordLogoIcon } from "@phosphor-icons/react";
 import { useEditor } from "@/src/context/EditorContext";
 import { notifications } from "@mantine/notifications";
 
@@ -15,14 +15,14 @@ export default function ShareModal({ opened, onClose }: IShareModalProps) {
     try {
       await copyAsPlainText();
       notifications.show({
-        title: "Success Copying as Plain Text",
-        message: "Plain text note is now in your clipboard.",
+        title: "Success Copying as Markdown",
+        message: "Markdown note is now in your clipboard.",
       });
       onClose();
     } catch (error) {
       notifications.show({
         color: "red",
-        title: "Failed Copying as Plain Text",
+        title: "Failed Copying as Markdown",
         message: (error as Error).message,
       });
     }
@@ -51,20 +51,21 @@ export default function ShareModal({ opened, onClose }: IShareModalProps) {
       onClose={onClose}
       title="Share Note"
       classNames={{ body: "flex flex-col gap-4" }}
+      overlayProps={{ blur: 2 }}
     >
       <Button
         fullWidth
-        leftSection={<TextAlignJustifyIcon />}
+        leftSection={<MarkdownLogoIcon />}
         onClick={onClickCopyAsPlainText}
       >
-        Copy as Markdown
+        Copy As Markdown
       </Button>
       <Button
         fullWidth
-        leftSection={<ArticleIcon />}
+        leftSection={<MicrosoftWordLogoIcon />}
         onClick={onClickCopyAsRichText}
       >
-        Copy as Rich Text
+        Copy As Rich Text
       </Button>
     </Modal>
   );
