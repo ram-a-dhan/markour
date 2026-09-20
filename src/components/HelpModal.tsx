@@ -247,6 +247,7 @@ export default function HelpModal({ opened, onClose }: IHelpModalProps) {
       onClose={onClose}
       title="Help"
       size="auto"
+      overlayProps={{ blur: 2 }}
     >
       <SimpleGrid cols={{ base: 1, lg: 2 }}>
         <div>

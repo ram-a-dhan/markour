@@ -12,6 +12,7 @@ import Providers from "./providers";
 export const metadata: Metadata = {
   title: "Markour",
   description: "Agile & Flexible Makdown Notes",
+  icons: { icon: [{ url: "/markour.svg", type: "image/svg+xml" }] },
 };
 
 export default function RootLayout({ children }: PropsWithChildren) {

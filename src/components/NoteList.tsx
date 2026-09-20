@@ -87,6 +87,7 @@ export default function NoteList({
         </div>
       ),
       labels: { confirm: <span>Clear Trash ({count})</span>, cancel: "Cancel" },
+      overlayProps: { blur: 2 },
       confirmProps: { color: "red" },
       closeOnConfirm: false,
       onConfirm: async () => {
