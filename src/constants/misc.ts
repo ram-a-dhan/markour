@@ -18,4 +18,5 @@ export const HTTP_STATUS = {
   CONFLICT: 409,
   TOO_MANY: 429,
   SERVER_ERROR: 500,
+  NETWORK_ERROR: 0,
 } as const;

@@ -12,6 +12,7 @@ import {
   Tooltip,
 } from "@mantine/core";
 import { useDisclosure, useRovingIndex } from "@mantine/hooks";
+import { notifications } from "@mantine/notifications";
 import {
   CaretDownIcon,
   NotepadIcon,
@@ -71,6 +72,15 @@ export default function Menu({ openedDrawer, closeDrawer }: IMenuProps) {
       event.stopPropagation();
       toggleEdit();
     }
+  };
+
+  const onClickLogout = () => {
+    notifications.show({
+      color: "blue",
+      title: "Success Logging Out",
+      message: "You have successfully logged out.",
+    });
+    logout();
   };
 
   return (
@@ -196,7 +206,7 @@ export default function Menu({ openedDrawer, closeDrawer }: IMenuProps) {
           <ActionIcon
             variant="transparent"
             color="dark"
-            onClick={logout}
+            onClick={onClickLogout}
           >
             <SignOutIcon size={26} />
           </ActionIcon>

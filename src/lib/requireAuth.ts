@@ -19,8 +19,8 @@ export function requireAuth(req: NextRequest) {
   if (!payload) {
     return {
       error: NextResponse.json(
-        { error: "Invalid or expired token." },
-        { status: 401 },
+        { message: "Invalid or expired token." },
+        { status: HTTP_STATUS.NOT_AUTHENTICATED },
       ),
     };
   }
