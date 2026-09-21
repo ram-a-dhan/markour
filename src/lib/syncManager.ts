@@ -154,8 +154,11 @@ export async function pullRemoteChanges(userId: string): Promise<void> {
     }
 
     await setLastSyncedAt(meta.serverTime);
-  } catch {
-    // offline — just skip this cycle
+  } catch (error) {
+    const err = error as IFetchErr;
+    if (err.status === HTTP_STATUS.NOT_AUTHENTICATED) {
+      throw err;
+    }
   }
 }
 

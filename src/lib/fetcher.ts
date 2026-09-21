@@ -3,6 +3,7 @@ import axios, {
   type AxiosRequestConfig,
   type AxiosResponse,
 } from "axios";
+import { HTTP_STATUS } from "@/src/constants/misc";
 
 // ---- Raw shape backend routes are expected to return ----
 interface IRawRes<T, M> {
@@ -37,8 +38,8 @@ instance.interceptors.response.use(
           details: error.response.data?.details,
         }
       : {
-          status: 0,
-          message: error.message || "Network error",
+          status: HTTP_STATUS.NETWORK_ERROR,
+          message: error.message || "Network Error",
         };
 
     return Promise.reject(normalized);

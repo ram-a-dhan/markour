@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { useDebouncedValue } from "@mantine/hooks";
+import { notifications } from "@mantine/notifications";
 import { useSession } from "@/src/context/SessionContext";
 import { fetcher } from "@/src/lib/fetcher";
 import {
@@ -18,13 +19,13 @@ import {
   fullResync,
 } from "@/src/lib/syncManager";
 import { NOTES_PURGE_API_PATH } from "@/src/constants/url";
-import { REQUEST_METHOD } from "@/src/constants/misc";
+import { HTTP_STATUS, REQUEST_METHOD } from "@/src/constants/misc";
 
 const DEBOUNCE_MS = 1500;
 const POLL_MS = 3000;
 
 export function useNotes() {
-  const { user } = useSession();
+  const { user, logout } = useSession();
   const userId = user?.id ?? null;
 
   const [view, setView] = useState<IView>({ mode: "notes" });
@@ -57,7 +58,19 @@ export function useNotes() {
   useEffect(() => {
     if (!userId) return;
     const interval = setInterval(async () => {
-      await pullRemoteChanges(userId);
+      await pullRemoteChanges(userId)
+        .catch((error) => {
+          const err = error as IFetchErr;
+          if (err.status === HTTP_STATUS.NOT_AUTHENTICATED) {
+            notifications.show({
+              color: "yellow",
+              title: "Session Over",
+              message: "Please sign in again.",
+              autoClose: false,
+            });
+            logout();
+          }
+        });
       await refresh();
     }, POLL_MS);
     return () => clearInterval(interval);
