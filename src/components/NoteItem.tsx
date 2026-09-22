@@ -1,4 +1,4 @@
-import { NavLink } from "@mantine/core";
+import { NavLink, ThemeIcon } from "@mantine/core";
 import { type UseRovingIndexGetItemPropsInput } from "@mantine/hooks";
 import { PushPinIcon } from "@phosphor-icons/react";
 import { useNotes } from "@/src/context/NotesContext";
@@ -40,8 +40,16 @@ export default function NoteItem({
         root: "focus:bg-(--mantine-color-gray-0)! dark:focus:bg-(--mantine-color-dark-6)! data-active:focus:bg-(--mantine-color-blue-light-hover)!",
         label: "text-base! truncate",
         description: "text-xs! truncate",
+        // section: "sendnudes"
       }}
-      rightSection={note.pinned && <PushPinIcon />}
+      rightSection={note.pinned && (
+        <ThemeIcon
+          variant="transparent"
+          color="dark"
+        >
+          <PushPinIcon />
+        </ThemeIcon>
+      )}
       {...getItemProps({
         index,
         onClick: () => onClickOpen(note.id),

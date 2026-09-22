@@ -191,8 +191,12 @@ export default function Menu({ openedDrawer, closeDrawer }: IMenuProps) {
         <Avatar
           src={user?.picture}
           size="40px"
-          name={user?.name}
           color="dark"
+          name={user?.name}
+          imageProps={{
+            crossOrigin: "anonymous",
+            referrerPolicy: "no-referrer",
+          }}
         />
         <div className="flex-1 min-w-0">
           <p className="mb-1 truncate">
