@@ -245,14 +245,14 @@ export default function HelpModal({ opened, onClose }: IHelpModalProps) {
     <Modal
       opened={opened}
       onClose={onClose}
-      title="Help"
+      title="Editor Guide"
       size="auto"
       overlayProps={{ blur: 2 }}
     >
       <SimpleGrid cols={{ base: 1, lg: 2 }}>
         <div>
           <h2 className="font-bold mb-2">
-            Empty Block Commands
+            Empty Line Commands
           </h2>
 
           <Table

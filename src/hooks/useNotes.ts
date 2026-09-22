@@ -74,7 +74,7 @@ export function useNotes() {
       await refresh();
     }, POLL_MS);
     return () => clearInterval(interval);
-  }, [userId, refresh]);
+  }, [userId, refresh, logout]);
 
   const notes = useMemo(() => {
     let filtered: ILocalNote[];

@@ -167,7 +167,7 @@ export default function NoteList({
                   color="dark"
                   onClick={() => onClickPurge()}
                 >
-                  <TrashIcon size={26} />
+                  <TrashIcon size={26} color="var(--mantine-color-red-6)" />
                 </ActionIcon>
               </Tooltip>
             ): (
@@ -215,18 +215,23 @@ export default function NoteList({
           value={searchQuery}
           onChange={onChangeSearchQuery}
         />
-        <ActionIcon
-          variant="transparent"
-          color="dark"
-          onClick={onDeleteSearchQuery}
-          classNames={{
-            root: searchQuery.length
-              ? "[&_svg]:text-(--mantine-color-blue-light-color)"
-              : "",
-          }}
-        >
-          <XCircleIcon size={22} />
-        </ActionIcon>
+        {!!searchQuery.length ? (
+          <ActionIcon
+            variant="transparent"
+            color="dark"
+            onClick={onDeleteSearchQuery}
+            classNames={{
+              root: searchQuery.length
+                ? "[&_svg]:text-(--mantine-color-blue-light-color)"
+                : "",
+            }}
+          >
+            <XCircleIcon size={22} />
+          </ActionIcon>
+
+        ) : (
+          <div className="w-7" />
+        )}
       </AppShell.Section>
 
       {/* NOTE LIST */}

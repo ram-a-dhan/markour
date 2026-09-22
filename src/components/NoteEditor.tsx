@@ -122,7 +122,7 @@ export default function NoteEditor({
           },
         },
         [Crepe.Feature.Placeholder]: {
-          text: "Start writing...",
+          text: "Start writing or type \"/\" for commands...",
         },
       },
     });
@@ -140,7 +140,7 @@ export default function NoteEditor({
         ctx.update(remarkStringifyOptionsCtx, (cfg) => ({
           ...cfg,
           bullet: "-" as const, // Milkdown's default is "*"
-          rule: "-" as const, // Milkdown's default is "*"
+          rule: "-" as const,
         }));
 
         ctx.get(listenerCtx).markdownUpdated((_ctx, markdown, prevMarkdown) => {

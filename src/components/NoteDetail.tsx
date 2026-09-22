@@ -1,17 +1,19 @@
 import { PropsWithChildren } from "react";
-import { ActionIcon, AppShell, Burger, Menu, Tooltip } from "@mantine/core";
+import { ActionIcon, AppShell, Menu, Tooltip } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { modals } from "@mantine/modals";
 import { notifications } from "@mantine/notifications";
 import {
   ArrowUUpLeftIcon,
   DotsThreeOutlineVerticalIcon,
+  ListIcon,
   PushPinIcon,
   PushPinSimpleSlashIcon,
   QuestionIcon,
-  ShareFatIcon,
+  ShareNetworkIcon,
   SidebarSimpleIcon,
   TrashIcon,
+  XIcon,
 } from "@phosphor-icons/react";
 import { useNotes } from "@/src/context/NotesContext";
 import { EditorProvider } from "@/src/context/EditorContext";
@@ -129,6 +131,16 @@ export default function NoteDetail({
     });
   };
 
+  const onClickTogglePinnedNote = async (noteId: string, isPinned: boolean) => {
+    const titleAction = !isPinned ? "Pinning" : "Unpinning";
+    const messageAction = !isPinned ? "pinned" : "unpinned";
+    await togglePinnedNote(noteId);
+    notifications.show({
+      title: `Success ${titleAction} Note`,
+      message: `Note ${messageAction} successfully.`,
+    });
+  };
+
   return (
     <EditorProvider>
       {/* NOTE HEADER */}
@@ -149,19 +161,18 @@ export default function NoteDetail({
                 />
               </ActionIcon>
             </Tooltip>
-            <Burger
-              opened={openedNavbarMobile}
-              onClick={toggleNavbarMobile}
-              hiddenFrom="sm"
-              size="sm"
-            />
-            <Tooltip label="Help">
+            <Tooltip label="All Notes">
               <ActionIcon
                 variant="transparent"
                 color="dark"
-                onClick={openHelpModal}
+                onClick={toggleNavbarMobile}
+                hiddenFrom="sm"
               >
-                <QuestionIcon size={26} />
+                {!!openedNavbarMobile ? (
+                  <XIcon size={26} weight="bold" />
+                ) : (
+                  <ListIcon size={26} weight="bold" />
+                )}
               </ActionIcon>
             </Tooltip>
           </div>
@@ -170,54 +181,94 @@ export default function NoteDetail({
           <div className="flex items-center gap-4">
             {loaded && !!note?.id && (
               <>
-                {/* NOTE OPTIONS */}
-                {!!note.deletedAt && (
-                  <Tooltip label="Restore Note">
-                    <ActionIcon
-                      variant="transparent"
-                      color="dark"
-                      onClick={() => onClickRestore(note.id)}
-                    >
-                      <ArrowUUpLeftIcon
-                        size={26}
-                        weight="fill"
-                      />
-                    </ActionIcon>
-                  </Tooltip>
-                )}
                 {!note.deletedAt && (
-                  <Tooltip label="Toggle Pin">
-                    <ActionIcon
-                      variant="transparent"
-                      color="dark"
-                      onClick={() => togglePinnedNote(note.id)}
-                    >
-                      {!!note.pinned ? (
-                        <PushPinSimpleSlashIcon size={26} />
-                      ) : (
-                        <PushPinIcon size={26} />
-                      )}
-                    </ActionIcon>
-                  </Tooltip>
+                  <>
+                    <Tooltip label="Editor Guide">
+                      <ActionIcon
+                        variant="transparent"
+                        color="dark"
+                        onClick={openHelpModal}
+                        visibleFrom="xs"
+                      >
+                        <QuestionIcon size={26} />
+                      </ActionIcon>
+                    </Tooltip>
+
+                    <Tooltip label="Share Note">
+                      <ActionIcon
+                        variant="transparent"
+                        color="dark"
+                        onClick={openShareModal}
+                        visibleFrom="xs"
+                      >
+                        <ShareNetworkIcon size={26} />
+                      </ActionIcon>
+                    </Tooltip>
+
+                    <Tooltip label={!note.pinned ? "Pin Note" : "Unpin Note"}>
+                      <ActionIcon
+                        variant="transparent"
+                        color="dark"
+                        onClick={() => onClickTogglePinnedNote(note.id, note.pinned)}
+                        visibleFrom="xs"
+                      >
+                        {!note.pinned ? (
+                          <PushPinIcon size={26} />
+                        ) : (
+                          <PushPinSimpleSlashIcon size={26} />
+                        )}
+                      </ActionIcon>
+                    </Tooltip>
+
+                    <Tooltip label="Move to Trash">
+                      <ActionIcon
+                        variant="transparent"
+                        color="dark"
+                        onClick={() => onClickDelete(note.id)}
+                        visibleFrom="xs"
+                      >
+                        <TrashIcon size={26} color="var(--mantine-color-red-6)" />
+                      </ActionIcon>
+                    </Tooltip>
+                  </>
                 )}
 
-                <Tooltip label="Share Note">
-                  <ActionIcon
-                    variant="transparent"
-                    color="dark"
-                    onClick={openShareModal}
-                  >
-                    <ShareFatIcon size={26} />
-                  </ActionIcon>
-                </Tooltip>
+                {!!note.deletedAt && (
+                  <>
+                    <Tooltip label="Restore Note">
+                      <ActionIcon
+                        variant="transparent"
+                        color="dark"
+                        onClick={() => onClickRestore(note.id)}
+                        visibleFrom="xs"
+                      >
+                        <ArrowUUpLeftIcon
+                          size={26}
+                          weight="fill"
+                        />
+                      </ActionIcon>
+                    </Tooltip>
 
-                {/* THREE DOT MENU */}
-                <Menu shadow="md">
+                    <Tooltip label="Delete Permanently">
+                      <ActionIcon
+                        variant="transparent"
+                        color="dark"
+                        onClick={() => onClickPurge(note.id)}
+                        visibleFrom="xs"
+                      >
+                        <TrashIcon size={26} color="var(--mantine-color-red-6)" />
+                      </ActionIcon>
+                    </Tooltip>
+                  </>
+                )}
+
+                <Menu position="left-start" withOverlay overlayProps={{ blur: 2 }}>
                   <Menu.Target>
                     <Tooltip label="Note Options">
                       <ActionIcon
                         variant="transparent"
                         color="dark"
+                        hiddenFrom="xs"
                       >
                         <DotsThreeOutlineVerticalIcon size={26} />
                       </ActionIcon>
@@ -225,24 +276,70 @@ export default function NoteDetail({
                   </Menu.Target>
 
                   <Menu.Dropdown>
-                    {!!note.deletedAt ? (
+                    {!note.deletedAt && (
                       <>
                         <Menu.Item
+                          leftSection={<QuestionIcon size={26} />}
+                          onClick={openHelpModal}
+                          classNames={{ itemLabel: "text-base" }}
+                        >
+                          Editor Guide
+                        </Menu.Item>
+
+                        <Menu.Divider />
+
+                        <Menu.Item
+                          leftSection={<ShareNetworkIcon size={26} />}
+                          onClick={openShareModal}
+                          classNames={{ itemLabel: "text-base" }}
+                        >
+                          Share Note
+                        </Menu.Item>
+
+                        <Menu.Divider />
+
+                        <Menu.Item
+                          leftSection={!note.pinned ? (
+                            <PushPinIcon size={26} />
+                          ) : (
+                            <PushPinSimpleSlashIcon size={26} />
+                          )}
+                          onClick={() => onClickTogglePinnedNote(note.id, note.pinned)}
+                          classNames={{ itemLabel: "text-base" }}
+                        >
+                          {!note.pinned ? "Pin Note" : "Unpin Note"}
+                        </Menu.Item>
+
+                        <Menu.Divider />
+
+                        <Menu.Item
                           color="red"
-                          leftSection={<TrashIcon />}
+                          leftSection={<TrashIcon size={26} />}
+                          onClick={() => onClickDelete(note.id)}
+                        >
+                          Move to Trash
+                        </Menu.Item>
+                      </>
+                    )}
+
+                    {!!note.deletedAt && (
+                      <>
+                        <Menu.Item
+                          leftSection={<ArrowUUpLeftIcon size={26} />}
+                          onClick={() => onClickRestore(note.id)}
+                          classNames={{ itemLabel: "text-base" }}
+                        >
+                          Restore Note
+                        </Menu.Item>
+
+                        <Menu.Divider />
+
+                        <Menu.Item
+                          color="red"
+                          leftSection={<TrashIcon size={26} />}
                           onClick={() => onClickPurge(note.id)}
                         >
                           Delete Permanently
-                        </Menu.Item>
-                      </>
-                    ) : (
-                      <>
-                        <Menu.Item
-                          color="red"
-                          leftSection={<TrashIcon />}
-                          onClick={() => onClickDelete(note.id)}
-                        >
-                          Move To Trash
                         </Menu.Item>
                       </>
                     )}
