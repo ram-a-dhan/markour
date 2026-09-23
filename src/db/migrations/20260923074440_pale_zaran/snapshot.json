@@ -1,9 +1,9 @@
 {
   "version": "7",
   "dialect": "sqlite",
-  "id": "4437c53d-e8b0-4393-8259-3d41fddced9c",
+  "id": "311e3e29-30b3-43f5-b385-4028de7a4d3f",
   "prevIds": [
-    "87cde1b5-e03b-41d6-b3ce-979e3540eaf9"
+    "00000000-0000-0000-0000-000000000000"
   ],
   "ddl": [
     {
@@ -79,6 +79,16 @@
       "default": "''",
       "generated": null,
       "name": "content",
+      "entityType": "columns",
+      "table": "notes"
+    },
+    {
+      "type": "integer",
+      "notNull": true,
+      "autoincrement": false,
+      "default": "false",
+      "generated": null,
+      "name": "pinned",
       "entityType": "columns",
       "table": "notes"
     },
