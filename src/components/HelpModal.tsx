@@ -7,7 +7,7 @@ const editorGuideData: TableData = {
         <Kbd>/</Kbd>
       </>,
       <>
-        Open block commands
+        Open Block Commands
       </>,
     ],
     [
@@ -15,7 +15,7 @@ const editorGuideData: TableData = {
         <Kbd>/</Kbd> + <code>heading</code>
       </>,
       <>
-        Insert heading
+        Insert Heading
       </>,
     ],
     [
@@ -23,7 +23,7 @@ const editorGuideData: TableData = {
         <Kbd>/</Kbd> + <code>quote</code>
       </>,
       <>
-        Insert quote block
+        Insert Quote Block
       </>,
     ],
     [
@@ -31,7 +31,7 @@ const editorGuideData: TableData = {
         <Kbd>/</Kbd> + <code>divider</code>
       </>,
       <>
-        Insert divider
+        Insert Divider
       </>,
     ],
     [
@@ -39,7 +39,7 @@ const editorGuideData: TableData = {
         <Kbd>/</Kbd> + <code>bullet</code>
       </>,
       <>
-        Insert bullet list
+        Insert Bullet List
       </>,
     ],
     [
@@ -47,7 +47,7 @@ const editorGuideData: TableData = {
         <Kbd>/</Kbd> + <code>ordered</code>
       </>,
       <>
-        Insert numbered list
+        Insert Numbered List
       </>,
     ],
     [
@@ -55,7 +55,7 @@ const editorGuideData: TableData = {
         <Kbd>/</Kbd> + <code>task</code>
       </>,
       <>
-        Insert task list
+        Insert Checkbox List
       </>,
     ],
     [
@@ -63,7 +63,7 @@ const editorGuideData: TableData = {
         <Kbd>/</Kbd> + <code>image</code>
       </>,
       <>
-        Insert image
+        Insert Image
       </>,
     ],
     [
@@ -71,7 +71,7 @@ const editorGuideData: TableData = {
         <Kbd>/</Kbd> + <code>code</code>
       </>,
       <>
-        Insert code block
+        Insert Code Block
       </>,
     ],
     [
@@ -79,7 +79,7 @@ const editorGuideData: TableData = {
         <Kbd>/</Kbd> + <code>table</code>
       </>,
       <>
-        Insert table
+        Insert Table
       </>,
     ],
     [
@@ -87,7 +87,7 @@ const editorGuideData: TableData = {
         <Kbd>/</Kbd> + <code>math</code>
       </>,
       <>
-        Insert math block
+        Insert Math Block
       </>,
     ],
   ],
@@ -223,7 +223,27 @@ const markdownGuideData: TableData = {
     ],
     [
       <>
-        <Kbd>-</Kbd> + <Kbd>-</Kbd> + <Kbd>-</Kbd>
+        <Kbd>$</Kbd> + <Kbd>$</Kbd> + <Kbd>Enter</Kbd>
+      </>,
+      <>
+        <code>$$</code>
+      </>,
+      <>
+        <i className="bg-[black] text-[white] px-1 py-0.5 font-serif">Math Block</i>
+      </>,
+    ],
+    [
+      <>
+        <Kbd>Ctrl</Kbd> + <Kbd>Enter</Kbd>
+      </>,
+      <></>,
+      <>
+        Escape Block
+      </>,
+    ],
+    [
+      <>
+        <Kbd>-</Kbd> + <Kbd>-</Kbd> + <Kbd>-</Kbd> + <Kbd>Enter</Kbd>
       </>,
       <>
         <code>---</code>
