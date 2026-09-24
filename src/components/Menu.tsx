@@ -13,6 +13,7 @@ import {
 } from "@mantine/core";
 import { useDisclosure, useRovingIndex } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
+import { modals } from "@mantine/modals";
 import {
   CaretDownIcon,
   NotepadIcon,
@@ -74,13 +75,27 @@ export default function Menu({ openedDrawer, closeDrawer }: IMenuProps) {
     }
   };
 
-  const onClickLogout = () => {
-    notifications.show({
-      color: "blue",
-      title: "Success Logging Out",
-      message: "You have successfully logged out.",
+  const onClickLogout = async () => {
+    const modalId = "confirm-logout";
+    modals.openConfirmModal({
+      modalId,
+      title: "Sign Out",
+      children: "Are you sure you want to sign out?",
+      labels: { confirm: "Sign Out", cancel: "Cancel" },
+      overlayProps: { blur: 2 },
+      closeOnConfirm: false,
+      onConfirm: async () => {
+        modals.updateModal({ modalId, confirmProps: { loading: true } });
+        await logout(() => {
+          notifications.show({
+            color: "blue",
+            title: "Success Signing Out",
+            message: "You have successfully signed out.",
+          });
+          modals.close(modalId);
+        });
+      },
     });
-    logout();
   };
 
   return (

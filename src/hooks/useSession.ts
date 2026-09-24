@@ -47,7 +47,7 @@ export function useSession() {
     })();
   }, []);
 
-  const logout = useCallback(async () => {
+  const logout = useCallback(async (callback?: () => void) => {
     await fetcher(LOGOUT_API_PATH, {
       method: REQUEST_METHOD.POST,
     });
@@ -55,6 +55,7 @@ export function useSession() {
     setUser(null);
     router.push(HOME_PATH);
     router.refresh();
+    callback?.();
   }, [router]);
 
   return { user, isLoadingUser, logout };

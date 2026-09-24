@@ -48,9 +48,9 @@ export function useNotes() {
     if (!userId) return;
     (async () => {
       await refresh();
-      setLoaded(true);
       await fullResync(userId);
       await refresh();
+      setLoaded(true);
     })();
   }, [userId, refresh]);
 
@@ -62,13 +62,14 @@ export function useNotes() {
         .catch((error) => {
           const err = error as IFetchErr;
           if (err.status === HTTP_STATUS.NOT_AUTHENTICATED) {
-            notifications.show({
-              color: "yellow",
-              title: "Session Over",
-              message: "Please sign in again.",
-              autoClose: false,
+            logout(() => {
+              notifications.show({
+                color: "yellow",
+                title: "Session Over",
+                message: "Please sign in again.",
+                autoClose: false,
+              });
             });
-            logout();
           }
         });
       await refresh();
