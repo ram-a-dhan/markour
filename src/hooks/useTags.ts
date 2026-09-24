@@ -11,13 +11,15 @@ export function useTags() {
   const [tags, setTags] = useState<ITagFE[]>([]);
   const [loaded, setLoaded] = useState(false);
 
-  const refresh = useCallback(async () => {
-    if (!user) return;
+  const refresh = useCallback(async (): Promise<ITagFE[]> => {
+    if (!user) return [];
     try {
       const res = await fetcher<ITagFE[]>(TAGS_API_PATH);
       setTags(res.data);
+      return res.data;
     } catch {
       // silent error
+      return [];
     }
   }, [user]);
 
@@ -40,7 +42,7 @@ export function useTags() {
         method: REQUEST_METHOD.POST,
         data: { name },
       });
-      await refresh();
+      await refresh().catch(() => null);
       return res.data;
     } catch (error) {
       throw error; // e.g. 409 duplicate name — caller should refresh + look it up instead
@@ -52,7 +54,7 @@ export function useTags() {
       await fetcher(TAGS_BY_ID_API_PATH(tagId), {
         method: REQUEST_METHOD.DELETE,
       });
-      await refresh();
+      await refresh().catch(() => null);
     } catch (error) {
       throw error;
     }
