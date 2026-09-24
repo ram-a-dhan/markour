@@ -1,1 +1,0 @@
-ALTER TABLE `users` ADD `picture` text DEFAULT '' NOT NULL;

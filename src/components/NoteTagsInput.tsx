@@ -1,7 +1,8 @@
 "use client";
 
-import { type KeyboardEvent, useState } from "react";
+import { type KeyboardEvent, useRef, useState } from "react";
 import { TagsInput } from "@mantine/core";
+import { useDebouncedCallback } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { TagIcon } from "@phosphor-icons/react";
 import { useTags } from "@/src/context/TagsContext";
@@ -16,52 +17,114 @@ interface INoteTagsInputProps {
 
 export default function NoteTagsInput({ noteId, tagIds, disabled }: INoteTagsInputProps) {
   const [searchValue, setSearchValue] = useState("");
-  const { tags, createTag, refresh } = useTags();
+  const [loading, setLoading] = useState(false);
+  const [optimisticNames, setOptimisticNames] = useState<string[] | null>(null);
+  const { tags, createTag, refresh, loaded } = useTags();
   const { updateNoteTags } = useNotes();
+
+  const submissionIdRef = useRef(0);
 
   // ID -> name for display; skip any ID that doesn't resolve (e.g. a tag
   // deleted on another device that hasn't synced here yet).
   const idToName = new Map(tags.map((t) => [t.id, t.name]));
-  const currentNames = tagIds
-    .map((id) => idToName.get(id))
-    .filter((n): n is string => !!n);
+  const currentNames = loaded
+    ? tagIds
+        .map((id) => idToName.get(id))
+        .filter((n): n is string => !!n)
+        .sort((a, b) => a.localeCompare(b))
+    : []; // don't show anything while tags are being fetched
+  const displayedNames = optimisticNames ?? currentNames;
+
+  // Debounced persist for pure add/remove of already-known tags — no
+  // network cost until this fires, so coalescing rapid clicks is safe.
+  const debouncedPersist = useDebouncedCallback((id: string, resolvedIds: string[], mySubmissionId: number) => {
+    updateNoteTags(id, resolvedIds)
+      .catch(() => {
+        notifications.show({
+          color: "red",
+          title: "Failed Saving Tags",
+          message: "Your tag changes couldn't be saved.",
+        });
+      })
+      .finally(() => {
+        if (submissionIdRef.current === mySubmissionId) {
+          setOptimisticNames(null);
+          setLoading(false);
+        }
+      });
+  }, { delay: 400, flushOnUnmount: true });
 
   const onChange = async (names: string[]) => {
+    const mySubmissionId = ++submissionIdRef.current;
+    setOptimisticNames(names.sort((a, b) => a.localeCompare(b))); // show the change immediately, no waiting
+    setLoading(true);
+
     const nameToId = new Map(tags.map((t) => [t.name, t.id]));
     const resolvedIds: string[] = [];
+    const newNames: string[] = [];
 
     for (const name of names) {
       const trimmed = name.trim();
       if (!trimmed) continue;
-
       const existingId = nameToId.get(trimmed);
       if (existingId) {
         resolvedIds.push(existingId);
-        continue;
+      } else {
+        newNames.push(trimmed);
       }
+    }
 
+    if (newNames.length === 0) {
+      setLoading(true);
+      debouncedPersist(noteId, resolvedIds, mySubmissionId);
+      return;
+    }
+
+    debouncedPersist.cancel();
+    setLoading(true);
+
+    for (const trimmed of newNames) {
       try {
         const created = await createTag(trimmed);
         resolvedIds.push(created.id);
       } catch (error) {
         const err = error as IFetchErr;
         if (err.status === HTTP_STATUS.CONFLICT) {
-          // Race condition — other devices created this name a moment ago.
-          // Refresh and resolve it by name instead of failing this tag.
-          await refresh();
-          const retryId = tags.find((t) => t.name === trimmed)?.id;
-          if (retryId) resolvedIds.push(retryId);
+          const freshTags = await refresh();
+          const retryId = freshTags.find((t) => t.name === trimmed)?.id;
+          if (retryId) {
+            resolvedIds.push(retryId);
+          } else {
+            notifications.show({
+              color: "red",
+              title: "Failed Adding Tag",
+              message: `Failed to add "${trimmed}" tag. Please try again.`,
+            });
+          }
         } else {
           notifications.show({
             color: "red",
             title: "Failed Creating Tag",
             message: err.message,
-          })
+          });
         }
       }
     }
 
-    await updateNoteTags(noteId, resolvedIds);
+    try {
+      await updateNoteTags(noteId, resolvedIds);
+    } catch (error) {
+      notifications.show({
+        color: "red",
+        title: "Failed Updating Tags",
+        message: (error as IFetchErr).message,
+      });
+    } finally {
+      if (submissionIdRef.current === mySubmissionId) {
+        setOptimisticNames(null);
+        setLoading(false);
+      }
+    }
   };
 
   const onKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
@@ -75,8 +138,13 @@ export default function NoteTagsInput({ noteId, tagIds, disabled }: INoteTagsInp
     <TagsInput
       variant="unstyled"
       leftSection={<TagIcon size={24} />}
-      placeholder={!disabled ? "Add Tags..." : !tagIds.length ? "No Tags" : ""}
-      value={currentNames}
+      placeholder={
+        !loaded ? "Loading Tags..." :
+        !disabled ? "Add Tags..." :
+        !tagIds.length ? "No Tags" :
+        ""
+      }
+      value={displayedNames}
       data={tags.map((t) => t.name).sort((a, b) => a.localeCompare(b))}
       onChange={onChange}
       searchValue={searchValue}
@@ -90,7 +158,8 @@ export default function NoteTagsInput({ noteId, tagIds, disabled }: INoteTagsInp
         inputField: disabled ? "cursor-not-allowed!" : "",
         pill: "[:where([data-mantine-color-scheme='dark'])_&]:bg-(--mantine-color-gray-8)!"
       }}
-      readOnly={disabled}
+      readOnly={disabled || !loaded}
+      loading={loading || !loaded}
     />
   );
 }
