@@ -4,8 +4,8 @@ import "@/src/styles/tailwind.css";
 import "@/src/styles/reset.scss";
 import "@/src/styles/global.scss";
 
-import { PropsWithChildren } from "react";
 import type { Metadata } from "next";
+import { PropsWithChildren } from "react";
 import { ColorSchemeScript, mantineHtmlProps } from "@mantine/core";
 import Providers from "@/src/app/providers";
 import VueFlags from "@/src/components/VueFlags";
@@ -13,7 +13,13 @@ import VueFlags from "@/src/components/VueFlags";
 export const metadata: Metadata = {
   title: "Markour",
   description: "Agile & Flexible Makdown Notes",
-  icons: { icon: [{ url: "/markour.svg", type: "image/svg+xml" }] },
+  icons: {
+    icon: [
+      { url: "/markour.svg", type: "image/svg+xml" },
+      { url: "/markour-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/markour-512.png", sizes: "512x512", type: "image/png" },
+    ],
+  },
 };
 
 export default function RootLayout({ children }: PropsWithChildren) {
