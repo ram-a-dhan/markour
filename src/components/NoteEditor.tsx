@@ -185,5 +185,5 @@ export default function NoteEditor({
     crepeRef.current?.setReadonly(!!disabled);
   }, [disabled]);
 
-  return <div ref={rootRef} className="h-full flex-1 overflow-y-auto" style={styles} />;
+  return <div ref={rootRef} className="flex-1" style={styles} />;
 }

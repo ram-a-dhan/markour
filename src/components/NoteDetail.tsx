@@ -353,9 +353,7 @@ export default function NoteDetail({
 
       {/* NOTE CONTENT */}
       <AppShell.Main>
-        <div className="h-full flex flex-col">
-          {children}
-        </div>
+        {children}
       </AppShell.Main>
 
       {/* HELP MODAL */}
