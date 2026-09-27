@@ -15,7 +15,8 @@ export const notes = sqliteTable("notes", {
   content: text("content").notNull().default(""),
   pinned: integer("pinned", { mode: "boolean" }).notNull().default(false),
   createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull().$defaultFn(() => new Date()),
-  updatedAt: integer("updated_at", { mode: "timestamp_ms" }).notNull().$defaultFn(() => new Date()),
+  updatedAt: integer("updated_at", { mode: "timestamp_ms" }).notNull().$defaultFn(() => new Date()), // client-driven, for LWW
+  syncedAt: integer("synced_at", { mode: "timestamp_ms" }).notNull().$defaultFn(() => new Date()), // server-driven, for pull cursor
   deletedAt: integer("deleted_at", { mode: "timestamp_ms" }),
   version: integer("version").notNull().default(1),
 });

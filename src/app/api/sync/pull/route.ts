@@ -10,6 +10,7 @@ export async function GET(req: NextRequest) {
   if (auth.error) return auth.error;
 
   const since = Number(req.nextUrl.searchParams.get("since") ?? 0);
+  const queryStartedAt = Date.now();
 
   const rows = await db
     .select()
@@ -17,10 +18,10 @@ export async function GET(req: NextRequest) {
     .where(
       and(
         eq(noteSchema.userId, auth.userId),
-        gt(noteSchema.updatedAt, new Date(since)),
+        gt(noteSchema.syncedAt, new Date(since)),
       ),
     )
-    .orderBy(asc(noteSchema.updatedAt));
+    .orderBy(asc(noteSchema.syncedAt));
 
   const allTagLinks = await db
     .select()
@@ -37,7 +38,7 @@ export async function GET(req: NextRequest) {
   return NextResponse.json({
     data: rows.map((r) => serializeNote(r, tagsByNote.get(r.id) ?? [])),
     meta: {
-      serverTime: Date.now(),
+      serverTime: queryStartedAt,
     },
   });
 }

@@ -1,0 +1,1 @@
+ALTER TABLE `notes` ADD `synced_at` integer;
