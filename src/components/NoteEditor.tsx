@@ -6,14 +6,16 @@ import "@milkdown/crepe/theme/frame-dark.css";
 import { useEffect, useRef } from "react";
 import { notifications } from "@mantine/notifications";
 import { Crepe } from "@milkdown/crepe";
-import { prosePluginsCtx, remarkStringifyOptionsCtx } from "@milkdown/kit/core";
+import { editorViewCtx, prosePluginsCtx, remarkStringifyOptionsCtx } from "@milkdown/kit/core";
 import { remarkPreserveEmptyLinePlugin } from "@milkdown/kit/preset/commonmark";
 import { listener, listenerCtx } from "@milkdown/kit/plugin/listener";
-import { Plugin, PluginKey } from "@milkdown/kit/prose/state";
+import { Plugin, PluginKey, Selection } from "@milkdown/kit/prose/state";
 import { DOMParser as ProseDOMParser } from "@milkdown/kit/prose/model";
 import { type EditorView } from "@milkdown/kit/prose/view";
+import { replaceAll } from "@milkdown/kit/utils";
 import { useEditor } from "@/src/context/EditorContext";
 import styles from "@/src/styles/modules/NoteEditor.module.scss";
+
 interface INoteEditorProps {
   noteId: string;
   content: string;
@@ -30,6 +32,8 @@ export default function NoteEditor({
   const rootRef = useRef<HTMLDivElement>(null);
   const crepeRef = useRef<Crepe | null>(null);
   const loadedNoteId = useRef<string | null>(null);
+  const lastKnownMarkdownRef = useRef<string>(content); // tracks current content without needing getMarkdown
+  const suppressNextUpdateRef = useRef<boolean>(false);
 
   const { setEditor } = useEditor();
 
@@ -145,11 +149,17 @@ export default function NoteEditor({
 
         ctx.get(listenerCtx).markdownUpdated((_ctx, markdown, prevMarkdown) => {
           if (needsInitalParse) {
-            needsInitalParse = false;
-            // This skips the initial parse/normalization firing, not a real edit.
+            needsInitalParse = false; // This skips the initial parse/normalization firing, not a real edit.
+            lastKnownMarkdownRef.current = markdown;
+            return;
+          }
+          if (suppressNextUpdateRef.current) {
+            suppressNextUpdateRef.current = false;
+            lastKnownMarkdownRef.current = markdown;
             return;
           }
           if (markdown !== prevMarkdown) {
+            lastKnownMarkdownRef.current = markdown;
             onChange(markdown);
           }
         });
@@ -184,6 +194,38 @@ export default function NoteEditor({
   useEffect(() => {
     crepeRef.current?.setReadonly(!!disabled);
   }, [disabled]);
+
+
+  useEffect(() => {
+    const crepe = crepeRef.current;
+    if (!crepe) return;
+    if (loadedNoteId.current !== noteId) return;
+    if (content === lastKnownMarkdownRef.current) return; // no real change, avoid pointless replace + cursor reset
+
+    crepe.editor.action((ctx) => {
+      const view = ctx.get(editorViewCtx);
+      // Only skip if the user is BOTH focused on this editor's DOM node
+      // AND the browser tab itself is actually active — otherwise
+      // view.hasFocus() can stay stuck `true` after switching tabs,
+      // since browsers don't blur the last-focused element on tab switch.
+      if (view.hasFocus() && document.hasFocus()) return;
+
+      const prevSelection = view.state.selection;
+      const prevAnchor = prevSelection.anchor;
+
+      // lastKnownMarkdownRef is now updated by the listener above, since
+      // replaceAll's markdownUpdated firing will hit the suppression branch.
+      suppressNextUpdateRef.current = true;
+      replaceAll(content)(ctx);
+
+      // Restore roughly where the cursor was, clamped to the new doc's
+      // length, so returning to this tab doesn't land at the very end.
+      const newDoc = view.state.doc;
+      const safeAnchor = Math.min(prevAnchor, newDoc.content.size);
+      const tr = view.state.tr.setSelection(Selection.near(newDoc.resolve(safeAnchor)));
+      view.dispatch(tr);
+    });
+  }, [content, noteId]);
 
   return <div ref={rootRef} className="h-full flex-1 overflow-y-auto" style={styles} />;
 }
