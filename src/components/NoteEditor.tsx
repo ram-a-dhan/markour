@@ -204,11 +204,6 @@ export default function NoteEditor({
 
     crepe.editor.action((ctx) => {
       const view = ctx.get(editorViewCtx);
-      // Only skip if the user is BOTH focused on this editor's DOM node
-      // AND the browser tab itself is actually active — otherwise
-      // view.hasFocus() can stay stuck `true` after switching tabs,
-      // since browsers don't blur the last-focused element on tab switch.
-      if (view.hasFocus() && document.hasFocus()) return;
 
       const prevSelection = view.state.selection;
       const prevAnchor = prevSelection.anchor;
