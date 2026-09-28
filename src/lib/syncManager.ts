@@ -4,6 +4,7 @@ import {
   getLastSyncedAt,
   setLastSyncedAt,
   putLocalNote,
+  getLocalNote,
 } from "@/src/lib/localdb";
 import {
   NOTES_API_PATH,
@@ -144,6 +145,13 @@ export async function pullRemoteChanges(userId: string): Promise<void> {
     const { data, meta } = res;
 
     for (const remote of data) {
+      const local = await getLocalNote(remote.id);
+      if (local?.dirty) {
+        // Don't overwrite an unsynced local edit — this device's own
+        // pending push will reconcile via LWW/409 handling instead.
+        continue;
+      }
+
       await putLocalNote({
         ...remote,
         userId,
