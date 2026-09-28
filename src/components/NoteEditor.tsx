@@ -204,6 +204,7 @@ export default function NoteEditor({
 
     crepe.editor.action((ctx) => {
       const view = ctx.get(editorViewCtx);
+      if (view.hasFocus() && document.hasFocus()) return; // ignore self-echo while typing
 
       const prevSelection = view.state.selection;
       const prevAnchor = prevSelection.anchor;
