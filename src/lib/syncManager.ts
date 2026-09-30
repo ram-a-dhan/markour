@@ -6,6 +6,7 @@ import {
   putLocalNote,
   getLocalNote,
 } from "@/src/lib/localdb";
+import { getClientId } from "@/src/lib/clientId";
 import {
   NOTES_API_PATH,
   SYNC_PULL_API_PATH,
@@ -36,8 +37,9 @@ export async function pushDirtyNotes(userId: string): Promise<void> {
               pinned: note.pinned,
               createdAt: note.createdAt,
               updatedAt: note.updatedAt,
-              // no tagIds here — new notes always start untagged, per your
-              // earlier decision, and POST /api/notes doesn't read tagIds anyway
+              clientId: getClientId(),
+              // no tagIds here — new notes always start untagged
+              // and POST /api/notes doesn't read tagIds anyway
             }
           });
           const created = res.data;
@@ -67,6 +69,7 @@ export async function pushDirtyNotes(userId: string): Promise<void> {
                   updatedAt: note.updatedAt,
                   deletedAt: note.deletedAt,
                   tagIds: note.tagIds,
+                  clientId: getClientId(),
                 },
               });
               const existing = res.data;
@@ -96,6 +99,7 @@ export async function pushDirtyNotes(userId: string): Promise<void> {
               updatedAt: note.updatedAt,
               deletedAt: note.deletedAt,
               tagIds: note.tagIds,
+              clientId: getClientId(),
             },
           });
           const pushed = res.data;

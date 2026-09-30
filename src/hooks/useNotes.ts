@@ -18,6 +18,7 @@ import {
   pullRemoteChanges,
   fullResync,
 } from "@/src/lib/syncManager";
+import { getClientId } from "@/src/lib/clientId";
 import { NOTES_PURGE_API_PATH } from "@/src/constants/url";
 import { HTTP_STATUS, REQUEST_METHOD } from "@/src/constants/misc";
 
@@ -117,6 +118,7 @@ export function useNotes() {
       version: 1,
       dirty: true,
       synced: false,
+      lastEditedByClientId: getClientId(),
     };
     await putLocalNote(newNote);
     await refresh();
@@ -132,6 +134,7 @@ export function useNotes() {
       ...current,
       ...patch,
       updatedAt: Date.now(),
+      lastEditedByClientId: getClientId(),
       dirty: true,
     };
     await putLocalNote(updated);
@@ -152,6 +155,7 @@ export function useNotes() {
       ...current,
       pinned: !(current.pinned ?? false),
       updatedAt: Date.now(),
+      lastEditedByClientId: getClientId(),
       dirty: true,
     });
     await refresh();
@@ -167,6 +171,7 @@ export function useNotes() {
       ...current,
       deletedAt: Date.now(),
       updatedAt: Date.now(),
+      lastEditedByClientId: getClientId(),
       dirty: true,
     });
     await refresh();
@@ -182,6 +187,7 @@ export function useNotes() {
       ...current,
       deletedAt: null,
       updatedAt: Date.now(),
+      lastEditedByClientId: getClientId(),
       dirty: true,
     });
     await refresh();
@@ -217,6 +223,7 @@ export function useNotes() {
       ...current,
       tagIds,
       updatedAt: Date.now(),
+      lastEditedByClientId: getClientId(),
       dirty: true,
     });
     await refresh();

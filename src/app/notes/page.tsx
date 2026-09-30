@@ -58,6 +58,7 @@ export default function Notes() {
         noteId={note.id}
         content={note.content}
         onChange={onChange}
+        lastEditedByClientId={note.lastEditedByClientId ?? null}
         disabled={!!note.deletedAt}
       />
       <NoteTagsInput
