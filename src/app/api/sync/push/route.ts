@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
     updatedAt,
     deletedAt,
     tagIds,
-    clientId
+    clientId,
   } = body as INotePushPayload;
 
   if (!id || typeof updatedAt !== "number") {
@@ -75,6 +75,7 @@ export async function POST(req: NextRequest) {
       updatedAt: new Date(updatedAt), // client's clock
       syncedAt: new Date(), // server's own clock
       deletedAt: deletedAt != null ? new Date(deletedAt) : null,
+      lastEditedByClientId: clientId ?? null,
       pinned: pinned ?? current.pinned,
       version: current.version + 1,
     })

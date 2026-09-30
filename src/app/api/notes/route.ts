@@ -37,6 +37,10 @@ export async function GET(req: NextRequest) {
   });
 }
 
+interface INotePostPayload extends INoteFE {
+  clientId?: string;
+}
+
 export async function POST(req: NextRequest) {
   const auth = requireAuth(req);
   if (auth.error) return auth.error;
@@ -47,8 +51,9 @@ export async function POST(req: NextRequest) {
     title,
     content,
     createdAt,
-    updatedAt
-  } = body as INoteFE;
+    updatedAt,
+    clientId,
+  } = body as INotePostPayload;
 
   if (!id || typeof createdAt !== "number" || typeof updatedAt !== "number") {
     return NextResponse.json(
@@ -80,6 +85,7 @@ export async function POST(req: NextRequest) {
       content: content ?? "",
       createdAt: new Date(createdAt),
       updatedAt: new Date(updatedAt),
+      lastEditedByClientId: clientId ?? null,
     })
     .returning();
 

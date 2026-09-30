@@ -14,12 +14,14 @@ import { DOMParser as ProseDOMParser } from "@milkdown/kit/prose/model";
 import { type EditorView } from "@milkdown/kit/prose/view";
 import { replaceAll } from "@milkdown/kit/utils";
 import { useEditor } from "@/src/context/EditorContext";
+import { getClientId } from "@/src/lib/clientId";
 import styles from "@/src/styles/modules/NoteEditor.module.scss";
 
 interface INoteEditorProps {
   noteId: string;
   content: string;
   onChange: (markdown: string) => void;
+  lastEditedByClientId: string | null;
   disabled: boolean;
 };
 
@@ -27,6 +29,7 @@ export default function NoteEditor({
   noteId,
   content,
   onChange,
+  lastEditedByClientId,
   disabled,
 }: INoteEditorProps) {
   const rootRef = useRef<HTMLDivElement>(null);
@@ -204,10 +207,17 @@ export default function NoteEditor({
 
     crepe.editor.action((ctx) => {
       const view = ctx.get(editorViewCtx);
-      if (view.hasFocus() && document.hasFocus()) return; // ignore self-echo while typing
 
-      const prevSelection = view.state.selection;
-      const prevAnchor = prevSelection.anchor;
+      // Only skip if we're actively in this editor AND the incoming
+      // change is our own recent push echoing back — never skip a
+      // genuine edit from another device, even while focused here.
+      const isFocusedHere = view.hasFocus() && document.hasFocus();
+      const isOwnEcho = lastEditedByClientId !== null && lastEditedByClientId === getClientId();
+      console.log("isFocusedHere", isFocusedHere, "isOwnEcho", isOwnEcho);
+      
+      if (isFocusedHere && isOwnEcho) return;
+
+      const prevAnchor = view.state.selection.anchor; // preserve cursor position before replaceAll()
 
       // lastKnownMarkdownRef is now updated by the listener above, since
       // replaceAll's markdownUpdated firing will hit the suppression branch.
@@ -221,7 +231,7 @@ export default function NoteEditor({
       const tr = view.state.tr.setSelection(Selection.near(newDoc.resolve(safeAnchor)));
       view.dispatch(tr);
     });
-  }, [content, noteId]);
+  }, [content, noteId, lastEditedByClientId]);
 
   return <div ref={rootRef} className="h-full flex-1 overflow-y-auto" style={styles} />;
 }
