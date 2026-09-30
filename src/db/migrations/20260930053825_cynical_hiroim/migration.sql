@@ -1,0 +1,1 @@
+ALTER TABLE `notes` ADD `last_edited_by_client_id` text;

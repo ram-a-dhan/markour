@@ -7,6 +7,7 @@ declare interface INoteBE {
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;
+  lastEditedByClientId: string | null;
   version: number;
 }
 
@@ -19,6 +20,7 @@ declare interface INoteFE {
   createdAt: number;
   updatedAt: number;
   deletedAt: number | null;
+  lastEditedByClientId: string | null;
   version: number;
   tagIds: string[];
 }

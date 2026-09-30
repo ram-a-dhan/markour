@@ -23,6 +23,7 @@ export const serializeNote = (row: INoteBE, tagIds: string[] = []): INoteFE => {
     createdAt: row.createdAt.getTime(),
     updatedAt: row.updatedAt.getTime(),
     deletedAt: row.deletedAt ? row.deletedAt.getTime() : null,
+    lastEditedByClientId: row.lastEditedByClientId,
     version: row.version,
     tagIds,
   };
