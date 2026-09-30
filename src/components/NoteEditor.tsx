@@ -213,8 +213,6 @@ export default function NoteEditor({
       // genuine edit from another device, even while focused here.
       const isFocusedHere = view.hasFocus() && document.hasFocus();
       const isOwnEcho = lastEditedByClientId !== null && lastEditedByClientId === getClientId();
-      console.log("isFocusedHere", isFocusedHere, "isOwnEcho", isOwnEcho);
-      
       if (isFocusedHere && isOwnEcho) return;
 
       const prevAnchor = view.state.selection.anchor; // preserve cursor position before replaceAll()
