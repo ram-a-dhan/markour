@@ -15,10 +15,11 @@ Copy the dotenv file:
 cp .env.example .env
 ```
 
-Fill in the JWT secret:
+Fill in the JWT and Cron secret:
 
 ```sh
 JWT_SECRET=<your-jwt-secret>
+CRON_SECRET=<your-cron-secret>
 ```
 
 Fill in the Google Sign-In credentials:
