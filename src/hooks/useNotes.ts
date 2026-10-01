@@ -200,11 +200,11 @@ export function useNotes() {
     if (ids.length === 0) throw new Error("Cannot purge notes without ids.");
 
     try {
-      const res = await fetcher<string[]>(NOTES_PURGE_API_PATH, {
+      await fetcher<string[]>(NOTES_PURGE_API_PATH, {
         method: REQUEST_METHOD.POST,
         data: { ids },
       });
-      await deleteLocalNotes(res.data);
+      await deleteLocalNotes(ids);
       // if offline/failed: local copies stay put, still tombstoned,
       // still visible in trash — user can retry purge later. No local-only
       // hard delete without server confirmation, to avoid a note vanishing

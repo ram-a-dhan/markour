@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/src/db";
-import { notes as noteSchema, noteTags as noteTagSchema } from "@/src/db/schema";
+import {
+  notes as noteSchema,
+  noteTags as noteTagSchema,
+  purgedNotes as purgedNoteSchema,
+} from "@/src/db/schema";
 import { gt, asc, eq, and, inArray } from "drizzle-orm";
 import { serializeNote } from "@/src/utils/serialize";
 import { requireAuth } from "@/src/lib/requireAuth";
@@ -35,8 +39,20 @@ export async function GET(req: NextRequest) {
     tagsByNote.set(link.noteId, list);
   }
 
+  const purgedRows = await db
+    .select({ noteId: purgedNoteSchema.noteId })
+    .from(purgedNoteSchema)
+    .where(
+      and(
+        eq(purgedNoteSchema.userId, auth.userId),
+      ),
+    );
+
   return NextResponse.json({
     data: rows.map((r) => serializeNote(r, tagsByNote.get(r.id) ?? [])),
-    meta: { serverTime: queryStartedAt },
+    meta: {
+      purgedIds: purgedRows.map((r) => r.noteId),
+      serverTime: queryStartedAt,
+    },
   });
 }

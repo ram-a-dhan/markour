@@ -39,3 +39,11 @@ export const noteTags = sqliteTable("note_tags", {
 }, (table) => [
   primaryKey({ columns: [table.noteId, table.tagId] }),
 ]);
+
+export const purgedNotes = sqliteTable("purged_notes", {
+  noteId: text("note_id").notNull(),
+  userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  purgedAt: integer("purged_at", { mode: "timestamp_ms" }).notNull().$defaultFn(() => new Date()),
+}, (table) => [
+  primaryKey({ columns: [table.noteId, table.userId] }),
+]);
