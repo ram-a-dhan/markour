@@ -97,7 +97,7 @@ const markdownGuideData: TableData = {
   body: [
     [
       <>
-        <Kbd>#</Kbd> &times; 1-6 + <Kbd>Space</Kbd>
+        <Kbd>#</Kbd> &times; <span className="whitespace-nowrap">1-6</span> + <Kbd>Space</Kbd>
       </>,
       <>
         <code className="whitespace-nowrap"># Text</code>&ensp;or&ensp;<code className="whitespace-nowrap">## Text</code> or so on...
@@ -176,7 +176,7 @@ const markdownGuideData: TableData = {
         <code className="whitespace-nowrap">- [ ] Text</code> or <code className="whitespace-nowrap">- [x] Text</code>
       </>,
       <>
-        <input type="checkbox" checked readOnly tabIndex={-1} />&ensp;Task List
+        <input type="checkbox" checked readOnly tabIndex={-1} style={{ accentColor: "var(--mantine-color-text)" }} />&ensp;Task List
       </>,
     ],
     [

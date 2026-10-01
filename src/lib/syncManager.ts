@@ -5,6 +5,7 @@ import {
   setLastSyncedAt,
   putLocalNote,
   getLocalNote,
+  deleteLocalNotes,
 } from "@/src/lib/localdb";
 import { getClientId } from "@/src/lib/clientId";
 import {
@@ -16,6 +17,10 @@ import { HTTP_STATUS, REQUEST_METHOD } from "@/src/constants/misc";
 
 interface IMeta {
   serverTime: number;
+}
+
+interface IMetaSyncPull extends IMeta {
+  purgedIds: string[];
 }
 
 // Push every locally-dirty note. Each is independent — one conflict
@@ -143,7 +148,7 @@ export async function pullRemoteChanges(userId: string): Promise<void> {
   const since = await getLastSyncedAt();
 
   try {
-    const res = await fetcher<INoteFE[], IMeta>(SYNC_PULL_API_PATH, {
+    const res = await fetcher<INoteFE[], IMetaSyncPull>(SYNC_PULL_API_PATH, {
       params: { since },
     });
     const { data, meta } = res;
@@ -163,6 +168,11 @@ export async function pullRemoteChanges(userId: string): Promise<void> {
         dirty: false,
         synced: true,
       });
+    }
+
+    // remove orphans other devices don't know are gone yet
+    if (meta.purgedIds?.length) {
+      await deleteLocalNotes(meta.purgedIds);
     }
 
     await setLastSyncedAt(meta.serverTime);

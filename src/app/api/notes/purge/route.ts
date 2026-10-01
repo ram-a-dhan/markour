@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/src/db";
-import { notes as noteSchema } from "@/src/db/schema";
+import {
+  notes as noteSchema,
+  purgedNotes as purgedNoteSchema,
+} from "@/src/db/schema";
 import { and, eq, inArray, isNotNull } from "drizzle-orm";
 import { requireAuth } from "@/src/lib/requireAuth";
 import { HTTP_STATUS } from "@/src/constants/misc";
@@ -25,10 +28,22 @@ export async function POST(req: NextRequest) {
       and(
         eq(noteSchema.userId, auth.userId),
         inArray(noteSchema.id, ids),
-        isNotNull(noteSchema.deletedAt)
+        isNotNull(noteSchema.deletedAt),
       )
     )
     .returning({ id: noteSchema.id });
+
+  if (deleted.length) {
+    await db
+      .insert(purgedNoteSchema)
+      .values(
+        deleted.map((r) => ({
+          noteId: r.id,
+          userId: auth.userId,
+          purgedAt: new Date(),
+        })),
+      );
+  }
 
   return NextResponse.json({
     data: deleted.map((r) => r.id),
