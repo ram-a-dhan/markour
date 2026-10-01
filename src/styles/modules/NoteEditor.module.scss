@@ -101,6 +101,12 @@
     color: #339af0;
   }
 
+  :global(.checked) {
+    svg {
+      fill: var(--crepe-color-primary) !important;
+    }
+  }
+
   :global(.link-input-area) {
     color: #abb2bf !important;
   }
