@@ -11,7 +11,8 @@ import Providers from "@/src/app/providers";
 import VueFlags from "@/src/components/VueFlags";
 
 export const metadata: Metadata = {
-  title: "Markour",
+  metadataBase: new URL(process.env.BASE_URL!),
+  title: "Markour - Markdown Notes",
   description: "Agile & Flexible Makdown Notes",
   icons: {
     icon: [
@@ -19,6 +20,24 @@ export const metadata: Metadata = {
       { url: "/markour-192.png", sizes: "192x192", type: "image/png" },
       { url: "/markour-512.png", sizes: "512x512", type: "image/png" },
     ],
+  },
+  openGraph: {
+    title: "Markour - Markdown Notes",
+    siteName: "Markour - Markdown Notes",
+    description: "Agile & Flexible Markdown Notes",
+    url: "/",
+    images: [
+      {
+        url: "/markour-og.png",
+        width: 1200,
+        height: 630,
+        alt: "Markour - Markdown Notes",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    images: ["/markour-og.png"],
   },
 };
 
